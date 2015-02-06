@@ -10,22 +10,19 @@ namespace blap.root.views
     [SerializeField]
     private ContextStartupFlags _startupFlag = ContextStartupFlags.AUTOMATIC;
 
-    private RootContext _root;
+    public RootContext root { get; private set; }
 
     private void Awake()
     {
-      _root = new RootContext(this, _startupFlag);
+      root = new RootContext(this, _startupFlag);
 
       switch (_startupFlag)
       {
         case ContextStartupFlags.MANUAL_MAPPING:
-          _root.Start();
-          _root.MapBindings();
-          _root.Launch();
+          root.Start();
           break;
         case ContextStartupFlags.MANUAL_LAUNCH:
-          _root.MapBindings();
-          _root.Launch();
+          root.Launch();
           break;
         case ContextStartupFlags.AUTOMATIC:
         default:

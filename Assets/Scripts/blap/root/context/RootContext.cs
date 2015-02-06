@@ -1,4 +1,6 @@
-﻿using blap.root.commands;
+﻿using blap.debug.mediators;
+using blap.debug.views;
+using blap.root.commands;
 using strange.extensions.context.api;
 using strange.extensions.context.impl;
 using UnityEngine;
@@ -29,7 +31,7 @@ namespace blap.root.context
       }
     #endregion
 
-    public void MapBindings()
+    override protected void mapBindings()
     {
       MapViews();
       MapModels();
@@ -37,19 +39,21 @@ namespace blap.root.context
       MapCommands();
     }
 
+    override protected void postBindings()
+    {
+    }
+
     private void MapViews()
     {
-
+      mediationBinder.Bind<DebugConsoleView>().To<DebugConsoleMediator>();
     }
 
     private void MapModels()
     {
-
     }
 
     private void MapServices()
     {
-
     }
 
     private void MapCommands()
