@@ -17,7 +17,8 @@ namespace blap.baseclasses.views
       public bool requiresContext { get { return _requiresContext; } set { _requiresContext = value; } }
 
       /// Indicates whether this View  has been registered with a Context
-      public bool registeredWithContext { get; set; }
+      private bool _registeredWithContext = true;
+      public bool registeredWithContext { get { return _registeredWithContext; } set { _registeredWithContext = value; } }
 
       /// Exposure to code of the registerWithContext (Inspector) boolean. If false, the View won't try to register.
       public bool autoRegisterWithContext { get { return true; } }
@@ -28,9 +29,19 @@ namespace blap.baseclasses.views
     private void Awake()
     {
       dispatcher = new EventDispatcher();
+      OnCreateFinished();
     }
 
     private void Start()
+    {
+      OnLoadFinished();
+    }
+
+    protected virtual void OnCreateFinished()
+    {
+    }
+
+    protected virtual void OnLoadFinished()
     {
     }
   }

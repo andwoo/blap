@@ -1,4 +1,6 @@
-﻿using blap.debug.mediators;
+﻿using blap.debug.commands;
+using blap.debug.events;
+using blap.debug.mediators;
 using blap.debug.views;
 using blap.root.commands;
 using strange.extensions.context.api;
@@ -58,7 +60,13 @@ namespace blap.root.context
 
     private void MapCommands()
     {
-      commandBinder.Bind(ContextEvent.START).To<StartupCommand>();
+      #region startup
+        commandBinder.Bind(ContextEvent.START).To<StartupCommand>();
+      #endregion
+
+      #region debug_console
+        commandBinder.Bind(DebugConsoleEvent.COMMAND_ENTERED).To<RouteDebugCommand>();
+      #endregion
     }
   }
 }

@@ -1,7 +1,7 @@
-﻿namespace Assets.Scripts.blap.debug.events
+﻿namespace blap.debug.events
 {
   enum DebugConsoleEvent
   {
-    TEST_CLICKED
+    COMMAND_ENTERED
   }
 }
