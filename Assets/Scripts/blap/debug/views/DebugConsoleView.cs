@@ -122,6 +122,7 @@ namespace blap.debug.views
     {
       base.OnCreateFinished();
 
+      //setup all the colour values to be quickly accessed
       _consoleColours = new Dictionary<LogType, Color>();
       _consoleColours.Add(LogType.Log, _logColour);
       _consoleColours.Add(LogType.Assert, _assertColour);
@@ -134,8 +135,10 @@ namespace blap.debug.views
     {
       base.OnLoadFinished();
 
+      //determine the available text dimensions
       _numberOfLinesToDisplay = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.height / (_log.fontSize + (_log.fontSize / 8))));
       _numberOfCharsPerLine = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.width / (_log.fontSize - (_log.fontSize / 2))));
+      //initialize the console buffer storage with the max amount of lines it can handle
       _logContent = new ConsoleBuffer(_numberOfLinesToCache);
 
 #if !UNITY_EDITOR || TEST_LOG_HANDLER

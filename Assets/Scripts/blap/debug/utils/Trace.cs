@@ -4,6 +4,11 @@ namespace blap.debug.utils
 {
   public static class Trace
   {
+    /// <summary>
+    /// Outputs the message to the debug log
+    /// </summary>
+    /// <param name="message">the message to be outputted to the debug console</param>
+    /// <param name="type">The log type. ex. error, warning, log, ect...</param>
     public static void Log(object message, LogType type = LogType.Log)
     {
       switch (type)

@@ -24,6 +24,9 @@ namespace blap.baseclasses.views
       public bool autoRegisterWithContext { get { return true; } }
     #endregion
 
+    /// <summary>
+    /// Event dispatcher that triggers events to be caught by the mediator
+    /// </summary>
     public IEventDispatcher dispatcher { get; private set; }
 
     private void Awake()
@@ -37,10 +40,16 @@ namespace blap.baseclasses.views
       OnLoadFinished();
     }
 
+    /// <summary>
+    /// Method is called once Awake is invoked
+    /// </summary>
     protected virtual void OnCreateFinished()
     {
     }
 
+    /// <summary>
+    /// Method is called once Start is invoked
+    /// </summary>
     protected virtual void OnLoadFinished()
     {
     }
