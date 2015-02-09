@@ -1,9 +1,12 @@
-﻿using blap.baseclasses.utils;
+﻿#undef TEST_LOG_HANDLER
+
+using blap.baseclasses.utils;
 using blap.baseclasses.views;
 using blap.debug.events;
 using blap.debug.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -24,28 +27,54 @@ namespace blap.debug.views
     [SerializeField]
     private Text _log = null;
 
-    [SerializeField]
-    private int _numberOfLinesToDisplay = 10;
+    
 
     [SerializeField]
     private int _numberOfLinesToCache = 3000;
 
+    private int _fontSize = 0;
+    private int _numberOfLinesToDisplay = 0;
+    private int _numberOfCharsPerLine = 0;
     private bool _openConsole = false;
     private ConsoleBuffer _logContent;
+
+    private void UnityHandleLog(string logString, string stackTrace, LogType type)
+    {
+      switch (type)
+      {
+        case LogType.Log:
+        case LogType.Warning:
+          InsertLogMessage(type.ToString() + " : " + logString, type);
+          break;
+        case LogType.Assert:
+        case LogType.Error:
+        case LogType.Exception:
+        default:
+          InsertLogMessage(type.ToString() + " : " + logString + "\n" + stackTrace, type);
+          break;
+      }
+    }
 
     protected override void OnLoadFinished()
     {
       base.OnLoadFinished();
-      _logContent = new ConsoleBuffer(_numberOfLinesToCache);
-      _log.text = "";
-      //Application.RegisterLogCallback(HandleLog);
 
+      _fontSize = _log.fontSize;
+      _numberOfLinesToDisplay = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.height / (_fontSize + (_fontSize / 8))));
+      _numberOfCharsPerLine = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.width / (_fontSize - (_fontSize / 2))));
+      _logContent = new ConsoleBuffer(_numberOfLinesToCache);
+
+#if !UNITY_EDITOR || TEST_LOG_HANDLER
+      Application.RegisterLogCallback(UnityHandleLog);
+#endif
       ShowConsoleElements(_openConsole);
     }
 
     private void OnDestroy()
     {
-        Application.RegisterLogCallback(null);
+#if !UNITY_EDITOR || TEST_LOG_HANDLER
+      Application.RegisterLogCallback(null);
+#endif
     }
 
     private void ShowConsoleElements(bool show)
@@ -74,15 +103,6 @@ namespace blap.debug.views
       }
     }
 
-    private void Update()
-    {
-      if (_scrollBar.value == 1)
-      {
-        //always show the lastest debug data if the scroll bar is at the bottom
-        DisplayLog();
-      }
-    }
-
     private void OnHandleCommand()
     {
       string input = _textInput.text;
@@ -90,45 +110,72 @@ namespace blap.debug.views
 
       if (!string.IsNullOrEmpty(input))
       {
-        _logContent.Add(input);
-        UpdateScrollbar();
+        InsertLogMessage(input, LogType.Log);
         dispatcher.Dispatch(DebugConsoleEvent.COMMAND_ENTERED, input);
-        DisplayLog();
       }
     }
 
-    private void HandleLog(string logString, string stackTrace, LogType type)
+    private void InsertLogMessage(string logString, LogType type)
     {
-      switch(type)
+      List<string> original = new List<string>();
+      original.AddRange(Regex.Split(logString, "\r\n"));
+
+      List<string> newstuff = new List<string>();
+      _logContent.Add(SplitLogMessages(0, original, newstuff));
+      UpdateScrollbar();
+      if (_scrollBar.value == 1 || _scrollBar.size == 1)
       {
-        case LogType.Log:
-          _logContent.Add(logString);
-          break;
-        case LogType.Assert:
-        case LogType.Error:
-        case LogType.Exception:
-        case LogType.Warning:
-        default:
-          _logContent.Add(logString + "\n" + stackTrace);
-          break;
+        UpdateLogView();
       }
     }
 
-    private void DisplayLog()
+    private List<string> SplitLogMessages(int index, List<string> original, List<string> output)
     {
-      Debug.Log("Displaying log " + _scrollBar.value);
-      List<string> log = _logContent.GetRange(Convert.ToInt32(Math.Floor((_logContent.NumberOfEntries() - _numberOfLinesToDisplay) * _scrollBar.value)), _numberOfLinesToDisplay);
-      _log.text = "";
-      for(int i = 0; i < log.Count; i++)
+      if (index < original.Count)
       {
-        _log.text += log[i] + "\n";
+        if(original[index].Length > _numberOfCharsPerLine)
+        {
+          int strLen = original[index].Length;
+          int localIndex = 0;
+          while(localIndex < strLen)
+          {
+            if(localIndex + _numberOfCharsPerLine < strLen)
+            {
+              string parsed = original[index].Substring(localIndex, _numberOfCharsPerLine);
+              output.Add(parsed);
+              localIndex += parsed.Length;
+            }
+            else
+            {
+              output.Add(original[index].Substring(localIndex));
+              break;
+            }
+          }
+        }
+        else
+        {
+          output.Add(original[index]);
+        }
+        SplitLogMessages(index + 1, original, output);
       }
+      return output;
     }
 
     private void UpdateScrollbar()
     {
       float size = MathUtils.Clamp<float>(Convert.ToSingle(_numberOfLinesToDisplay) / Convert.ToSingle(_logContent.NumberOfEntries()), 0, 1);
       _scrollBar.size = size;
+    }
+
+    private void UpdateLogView()
+    {
+      int destination = Convert.ToInt32(Math.Floor((_logContent.NumberOfEntries() - _numberOfLinesToDisplay) * _scrollBar.value));
+      List<string> log = _logContent.GetRange(destination, _numberOfLinesToDisplay);
+      _log.text = "";
+      for (int i = 0; i < log.Count; i++)
+      {
+        _log.text += log[i] + "\n";
+      }
     }
 
     public void GUI_OnOpenConsole()
@@ -144,7 +191,7 @@ namespace blap.debug.views
 
     public void GUI_OnScrollChanged()
     {
-      DisplayLog();
+      UpdateLogView();
     }
   }
 }

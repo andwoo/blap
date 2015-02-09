@@ -14,26 +14,39 @@ namespace blap.debug.utils
       _maxLines = maxLines;
     }
 
-    public void Add(string content, string splitOn = "\r\n")
+    public void Add(string content)
     {
-      if(!string.IsNullOrEmpty(content))
+      if (!string.IsNullOrEmpty(content))
       {
-        string[] entries = Regex.Split(content, splitOn);
-
-        if (entries.Length + _cache.Count > _maxLines)
+        if(_cache.Count + 1 > _maxLines)
         {
-          _cache.RemoveRange(0, entries.Length);
+          _cache.RemoveAt(0);
         }
-        _cache.AddRange(entries);
+        _cache.Add(content);
+      }
+    }
+
+    public void Add(List<string> content)
+    {
+      for(int i = 0; i < content.Count; i++)
+      {
+        Add(content[i]);
       }
     }
 
     public List<string> GetRange(int startIndex, int count)
     {
-      if (startIndex > _cache.Count)
+      if (startIndex < 0)
+      {
+        startIndex = 0;
+      }
+      else if (startIndex > _cache.Count)
       {
         startIndex = _cache.Count - 1;
-        count = 1;
+      }
+      if (count < 0)
+      {
+        count = 0;
       }
       else if (startIndex + count > _cache.Count)
       {
