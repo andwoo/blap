@@ -12,16 +12,16 @@ namespace blap.debug.utils
     /// <summary>
     /// The maximum amount of lines the buffer will store
     /// </summary>
-    private int _maxLines;
+    public int maxLines { get; private set; }
 
     /// <summary>
     /// The storage of console logs
     /// </summary>
-    /// <param name="maxLines">The maximum amount of lines the buffer will store</param>
-    public ConsoleBuffer(int maxLines)
+    /// <param name="max">The maximum amount of lines the buffer will store</param>
+    public ConsoleBuffer(int max)
     {
       _cache = new List<string>();
-      _maxLines = maxLines;
+      maxLines = max;
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace blap.debug.utils
     {
       if (!string.IsNullOrEmpty(content))
       {
-        if(_cache.Count + 1 > _maxLines)
+        if (_cache.Count + 1 > maxLines)
         {
           _cache.RemoveAt(0);
         }

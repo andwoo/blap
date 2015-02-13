@@ -1,4 +1,4 @@
-﻿#undef TEST_LOG_HANDLER
+﻿#define TEST_LOG_HANDLER
 
 using blap.baseclasses.utils;
 using blap.baseclasses.views;
@@ -6,6 +6,7 @@ using blap.debug.events;
 using blap.debug.utils;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,10 +80,6 @@ namespace blap.debug.views
     /// </summary>
     private int _numberOfLinesToDisplay = 0;
     /// <summary>
-    /// number of characters per line the log textfield can display, used for calculating the amount of text to show when scrolling
-    /// </summary>
-    private int _numberOfCharsPerLine = 0;
-    /// <summary>
     /// used for toggling the view of the console's main components
     /// </summary>
     private bool _openConsole = false;
@@ -94,6 +91,10 @@ namespace blap.debug.views
     /// the storage of our log colours. used to highlight special text in the log textfield
     /// </summary>
     private Dictionary<LogType, Color> _consoleColours;
+
+    private readonly float _DEFAULT_LINE_SPACING = 5f;
+    private TextGenerationSettings _textGenSettings;
+    private TextGenerator _textGenerator;
 
     /// <summary>
     /// This callback is called each time Unity's Debug methods are invoked. We use it to display content logged into our debug console.
@@ -113,6 +114,9 @@ namespace blap.debug.views
         case LogType.Error:
         case LogType.Exception:
         default:
+          Type T = typeof(GUIUtility);
+            PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
+            systemCopyBufferProperty.SetValue(null, logString + "\n" + stackTrace, null);
           InsertLogMessage(logString + "\n" + stackTrace, type);
           break;
       }
@@ -136,8 +140,11 @@ namespace blap.debug.views
       base.OnLoadFinished();
 
       //determine the available text dimensions
-      _numberOfLinesToDisplay = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.height / (_log.fontSize + (_log.fontSize / 8))));
-      _numberOfCharsPerLine = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.width / (_log.fontSize - (_log.fontSize / 2))));
+      _textGenSettings = _log.GetGenerationSettings(_log.rectTransform.rect.size);
+      _textGenerator = new TextGenerator();
+      _textGenerator.Populate("W", _textGenSettings);
+      //_numberOfLinesToDisplay = Convert.ToInt32(_log.rectTransform.rect.height / _textGenerator.GetLinesArray()[0].height);
+      _numberOfLinesToDisplay = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.size.y / (_log.fontSize + (_log.lineSpacing * _DEFAULT_LINE_SPACING))));
       //initialize the console buffer storage with the max amount of lines it can handle
       _logContent = new ConsoleBuffer(_numberOfLinesToCache);
 
@@ -190,44 +197,20 @@ namespace blap.debug.views
 
     private void InsertLogMessage(string logString, LogType type)
     {
-      _logContent.Add(SplitLogMessages(0, Regex.Split(logString, "\r\n"), new List<string>(), type));
+      _textGenerator.Populate(logString, _textGenSettings);
+      UILineInfo[] lines = _textGenerator.GetLinesArray();
+      for (int i = 0; i < lines.Length; i++)
+      {
+        int blockLength = (i + 1) < lines.Length ? ((lines[i + 1].startCharIdx/* - 1*/) - lines[i].startCharIdx) : -1;
+        string line = blockLength > 0 ? logString.Substring(lines[i].startCharIdx, blockLength) : logString.Substring(lines[i].startCharIdx);
+        _logContent.Add(String.Format("<color={0}>{1}</color>", GetColourForLogType(type), line.TrimEnd('\r','\n')));
+      }
+      
       UpdateScrollbar();
       if (_scrollBar.value == 1 || _scrollBar.size == 1)
       {
         UpdateLogView();
       }
-    }
-
-    private List<string> SplitLogMessages(int index, string[] original, List<string> output, LogType type)
-    {
-      if (index < original.Length)
-      {
-        if(original[index].Length > _numberOfCharsPerLine)
-        {
-          int strLen = original[index].Length;
-          int localIndex = 0;
-          while(localIndex < strLen)
-          {
-            if(localIndex + _numberOfCharsPerLine < strLen)
-            {
-              string parsed = original[index].Substring(localIndex, _numberOfCharsPerLine);
-              output.Add("<color=" + GetColourForLogType(type) + ">" + parsed + "</color>");
-              localIndex += parsed.Length;
-            }
-            else
-            {
-              output.Add("<color=" + GetColourForLogType(type) + ">" + original[index].Substring(localIndex) + "</color>");
-              break;
-            }
-          }
-        }
-        else
-        {
-          output.Add("<color=" + GetColourForLogType(type) + ">" + original[index] + "</color>");
-        }
-        SplitLogMessages(index + 1, original, output, type);
-      }
-      return output;
     }
 
     private string GetColourForLogType(LogType type)
@@ -243,7 +226,7 @@ namespace blap.debug.views
 
     private void UpdateLogView()
     {
-      int destination = Convert.ToInt32(Math.Floor((_logContent.NumberOfEntries() - _numberOfLinesToDisplay) * _scrollBar.value));
+      int destination = Convert.ToInt32(Math.Floor((_logContent.NumberOfEntries() - _numberOfLinesToDisplay) * (_scrollBar.value * (1 - (_logContent.NumberOfEntries() / _logContent.maxLines)))));
       List<string> messageBlock = _logContent.GetRange(destination, _numberOfLinesToDisplay);
       string block = "";
       for (int i = 0; i < messageBlock.Count; i++)
