@@ -2,6 +2,7 @@
 {
   enum DebugConsoleEvent
   {
-    COMMAND_ENTERED
+    COMMAND_ENTERED,
+    CLEAR_CONSOLE
   }
 }

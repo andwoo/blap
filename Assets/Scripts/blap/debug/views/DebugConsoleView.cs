@@ -2,18 +2,16 @@
 
 using blap.baseclasses.utils;
 using blap.baseclasses.views;
-using blap.debug.events;
+using blap.debug.interfaces;
 using blap.debug.utils;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace blap.debug.views
 {
-  public class DebugConsoleView : BlapView
+  public class DebugConsoleView : BlapView, IDebugConsole
   {
     /// <summary>
     /// List of Game objects in which we toggle their view when the console is to be displayed
@@ -96,6 +94,8 @@ namespace blap.debug.views
     private TextGenerationSettings _textGenSettings;
     private TextGenerator _textGenerator;
 
+    private event InputCommandHandler InputCommandDispatcher;
+
     /// <summary>
     /// This callback is called each time Unity's Debug methods are invoked. We use it to display content logged into our debug console.
     /// </summary>
@@ -114,9 +114,6 @@ namespace blap.debug.views
         case LogType.Error:
         case LogType.Exception:
         default:
-          Type T = typeof(GUIUtility);
-            PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
-            systemCopyBufferProperty.SetValue(null, logString + "\n" + stackTrace, null);
           InsertLogMessage(logString + "\n" + stackTrace, type);
           break;
       }
@@ -142,8 +139,6 @@ namespace blap.debug.views
       //determine the available text dimensions
       _textGenSettings = _log.GetGenerationSettings(_log.rectTransform.rect.size);
       _textGenerator = new TextGenerator();
-      _textGenerator.Populate("W", _textGenSettings);
-      //_numberOfLinesToDisplay = Convert.ToInt32(_log.rectTransform.rect.height / _textGenerator.GetLinesArray()[0].height);
       _numberOfLinesToDisplay = Convert.ToInt32(Math.Floor(_log.rectTransform.rect.size.y / (_log.fontSize + (_log.lineSpacing * _DEFAULT_LINE_SPACING))));
       //initialize the console buffer storage with the max amount of lines it can handle
       _logContent = new ConsoleBuffer(_numberOfLinesToCache);
@@ -151,7 +146,6 @@ namespace blap.debug.views
 #if !UNITY_EDITOR || TEST_LOG_HANDLER
       Application.RegisterLogCallback(UnityHandleLog);
 #endif
-
       ShowConsoleElements(_openConsole);
     }
 
@@ -190,19 +184,21 @@ namespace blap.debug.views
 
       if (!string.IsNullOrEmpty(input))
       {
+        input = input.Trim().ToLowerInvariant();
         InsertLogMessage(input, LogType.Log);
-        dispatcher.Dispatch(DebugConsoleEvent.COMMAND_ENTERED, input);
+        string[] paramaters = input.Split(' ');
+        InputCommandDispatcher(paramaters[0], paramaters.Length > 1 ? paramaters.SubArray(1) : null);
       }
     }
 
-    private void InsertLogMessage(string logString, LogType type)
+    private void InsertLogMessage(string input, LogType type)
     {
-      _textGenerator.Populate(logString, _textGenSettings);
+      _textGenerator.Populate(input, _textGenSettings);
       UILineInfo[] lines = _textGenerator.GetLinesArray();
       for (int i = 0; i < lines.Length; i++)
       {
         int blockLength = (i + 1) < lines.Length ? ((lines[i + 1].startCharIdx/* - 1*/) - lines[i].startCharIdx) : -1;
-        string line = blockLength > 0 ? logString.Substring(lines[i].startCharIdx, blockLength) : logString.Substring(lines[i].startCharIdx);
+        string line = blockLength > 0 ? input.Substring(lines[i].startCharIdx, blockLength) : input.Substring(lines[i].startCharIdx);
         _logContent.Add(String.Format("<color={0}>{1}</color>", GetColourForLogType(type), line.TrimEnd('\r','\n')));
       }
       
@@ -237,17 +233,46 @@ namespace blap.debug.views
       _log.text = block;
     }
 
+    public void AddInputCommandLister(InputCommandHandler handler)
+    {
+      InputCommandDispatcher += handler;
+    }
+
+    public void RemoveInputCommandLister(InputCommandHandler handler)
+    {
+      InputCommandDispatcher -= handler;
+    }
+
+    /// <summary>
+    /// Clears the log cache and resets the view and scrollbar
+    /// </summary>
+    public void ClearLog()
+    {
+      _logContent.Clear();
+      UpdateScrollbar();
+      UpdateLogView();
+    }
+
+    /// <summary>
+    /// Method toggles the visuals of the debug console
+    /// </summary>
     public void GUI_OnOpenConsole()
     {
       _openConsole = !_openConsole;
       ShowConsoleElements(_openConsole);
     }
 
+    /// <summary>
+    /// Takes the text in the textinput and triggers a command, the textinput then clears.
+    /// </summary>
     public void GUI_OnEnterCommand()
     {
       OnHandleCommand();
     }
 
+    /// <summary>
+    /// Called each time the scroll bar is moved. Log view is updated with new text.
+    /// </summary>
     public void GUI_OnScrollChanged()
     {
       UpdateLogView();

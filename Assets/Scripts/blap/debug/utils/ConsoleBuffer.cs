@@ -25,6 +25,14 @@ namespace blap.debug.utils
     }
 
     /// <summary>
+    /// Clears all the contents in the cache
+    /// </summary>
+    public void Clear()
+    {
+      _cache.Clear();
+    }
+
+    /// <summary>
     /// Add an element to the storage
     /// </summary>
     /// <param name="content">The content to store</param>
