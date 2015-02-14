@@ -1,4 +1,5 @@
 ﻿using blap.baseclasses.managers;
+using blap.debug.utils;
 using blap.debug.views;
 using blap.root.views;
 using strange.extensions.command.impl;
@@ -10,8 +11,8 @@ namespace blap.root.commands
   {
     public override void Execute()
     {
-      Debug.Log("App Startup Complete");
       GameObject.Find("ContextView").GetComponent<RootContextView>().root.AddView(BlapViewManager.CreateBlapViewFromPrefab<DebugConsoleView>("console/DebugConsole"));
+      Trace.Log("App Startup Complete");
     }
   }
 }

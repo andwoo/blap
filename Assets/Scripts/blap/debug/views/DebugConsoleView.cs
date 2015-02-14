@@ -1,4 +1,4 @@
-﻿#define TEST_LOG_HANDLER
+﻿#undef TEST_LOG_HANDLER
 
 using blap.baseclasses.utils;
 using blap.baseclasses.views;
