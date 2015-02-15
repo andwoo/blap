@@ -1,6 +1,6 @@
-﻿using blap.baseclasses.managers;
-using blap.debug.utils;
-using blap.debug.views;
+﻿using blap.framework.viewmanager.managers;
+using blap.framework.debug.utils;
+using blap.framework.debug.views;
 using blap.root.views;
 using strange.extensions.command.impl;
 using UnityEngine;

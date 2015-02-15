@@ -1,9 +1,9 @@
-﻿using blap.debug.commands;
-using blap.debug.events;
-using blap.debug.interfaces;
-using blap.debug.mediators;
-using blap.debug.models;
-using blap.debug.views;
+﻿using blap.framework.debug.commands;
+using blap.framework.debug.events;
+using blap.framework.debug.interfaces;
+using blap.framework.debug.mediators;
+using blap.framework.debug.models;
+using blap.framework.debug.views;
 using blap.root.commands;
 using strange.extensions.context.api;
 using strange.extensions.context.impl;
