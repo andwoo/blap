@@ -11,7 +11,7 @@ namespace blap.root.commands
   {
     public override void Execute()
     {
-      GameObject.Find("ContextView").GetComponent<RootContextView>().root.AddView(BlapViewManager.CreateBlapViewFromPrefab<DebugConsoleView>("console/DebugConsole"));
+      GameObject.Find("ContextView").GetComponent<RootContextView>().root.AddView(BlapViewManager.CreateBlapViewFromPrefab<DebugConsoleView>("framework/debug/DebugConsole"));
       Trace.Log("App Startup Complete");
     }
   }
