@@ -1,6 +1,9 @@
 ﻿using blap.framework.webdownloader.interfaces;
 using blap.framework.webdownloader.responses;
 using blap.framework.webdownloader.requests;
+using blap.framework.www.factories;
+using blap.framework.www.httprequests;
+using UnityEngine;
 
 namespace blap.framework.webdownloader.services
 {
@@ -15,12 +18,8 @@ namespace blap.framework.webdownloader.services
 
     public void SendRequest<T>(WebDownloadRequest request) where T : AbstractWebDownloadResponse
     {
-
-    }
-
-    private void OnDownloadComplete()
-    {
-      downloadCompleteEvent(null);
+      GetRequest httpRequest = WWWFactory.instance.CreateGetRequest();
+      //httpRequest.SendRequest(request.url, (x) => 
     }
   }
 }

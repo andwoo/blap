@@ -1,14 +1,18 @@
-﻿using blap.framework.debug.commands;
+﻿using blap.framework.coroutinerunner.interfaces;
+using blap.framework.debug.commands;
 using blap.framework.debug.events;
 using blap.framework.debug.interfaces;
 using blap.framework.debug.mediators;
 using blap.framework.debug.models;
+using blap.framework.debug.utils;
 using blap.framework.debug.views;
 using blap.framework.webdownloader.commands;
 using blap.framework.webdownloader.events;
 using blap.framework.webdownloader.interfaces;
 using blap.framework.webdownloader.services;
+using blap.framework.www.factories;
 using blap.root.commands;
+using framework.coroutinerunner.runners;
 using strange.extensions.context.api;
 using strange.extensions.context.impl;
 using UnityEngine;
@@ -65,7 +69,7 @@ namespace blap.root.context
         ICommandContainer debugCommands = new CommandContainer();
         debugCommands.AddCommand("clr", DebugConsoleEvent.CLEAR_CONSOLE);
         debugCommands.AddCommand("clear", DebugConsoleEvent.CLEAR_CONSOLE);
-        debugCommands.AddCommand("dl_txt", WebDownloadEvent.DOWNLOAD_TEXTURE);
+        debugCommands.AddCommand("dl_img", WebDownloadEvent.DOWNLOAD_TEXTURE); //make the string[] params  a single string if only 1 unit
         injectionBinder.Bind<ICommandContainer>().ToValue(debugCommands).ToSingleton();
       #endregion
     }
@@ -74,6 +78,19 @@ namespace blap.root.context
     {
       #region web_downloader
         injectionBinder.Bind<IWebDownloadService>().To<WebDownloadService>().ToSingleton();
+      #endregion
+
+      #region routine_runner
+      CoroutineRunner runner = (base.contextView as GameObject).GetComponent<CoroutineRunner>();
+      if (runner != null)
+      {
+        WWWFactory.instance.SetRoutineRunner(runner);
+        injectionBinder.Bind<ISimpleRoutineRunner>().ToValue(runner).ToSingleton();
+      }
+      else
+      {
+        Trace.Log("CoroutineRunner was not found on ContextView", LogType.Error);
+      }
       #endregion
     }
 

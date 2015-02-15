@@ -2,24 +2,19 @@
 
 namespace blap.framework.webdownloader.responses
 {
-  public class AbstractWebDownloadResponse
+  public abstract class AbstractWebDownloadResponse
   {
     public bool success { get; protected set; }
     public string downloadPath { get; private set; }
+    public short httpErrorCode { get; private set; }
+    public string httpErrorMessage { get; private set; }
 
-    public AbstractWebDownloadResponse(WWW httpResponse, bool downloadSuccess)
+    public AbstractWebDownloadResponse(WWW httpResponse, bool downloadSuccess, short errorCode, string errorMessage)
     {
       success = downloadSuccess;
       downloadPath = httpResponse.url;
-    }
-
-    protected void DestroyHttpResponse(WWW httpResponse)
-    {
-      if (httpResponse != null)
-      {
-        httpResponse.Dispose();
-        httpResponse = null;
-      }
+      httpErrorCode = errorCode;
+      httpErrorMessage = errorMessage;
     }
   }
 }

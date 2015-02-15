@@ -6,7 +6,7 @@ using strange.extensions.command.impl;
 
 namespace blap.framework.webdownloader.commands
 {
-  class AbstractWebDownloadCommand : EventCommand
+  abstract class AbstractWebDownloadCommand : EventCommand
   {
     [Inject]
     public IWebDownloadService service { get; set; }
