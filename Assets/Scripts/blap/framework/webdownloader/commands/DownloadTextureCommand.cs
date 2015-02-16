@@ -1,8 +1,6 @@
 ﻿using blap.framework.webdownloader.events;
-using blap.framework.webdownloader.interfaces;
 using blap.framework.webdownloader.requests;
 using blap.framework.webdownloader.responses;
-using strange.extensions.command.impl;
 
 namespace blap.framework.webdownloader.commands
 {

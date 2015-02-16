@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace blap.framework.webdownloader.responses
 {
   public class WebDownloadTextureResponse : AbstractWebDownloadResponse

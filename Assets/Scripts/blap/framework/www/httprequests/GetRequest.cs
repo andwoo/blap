@@ -1,5 +1,6 @@
 ﻿using blap.framework.coroutinerunner.interfaces;
 using blap.framework.debug.utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,9 +79,19 @@ namespace blap.framework.www.httprequests
       }
       else
       {
+        //404 Not Found
         Trace.Log(_httpRequest.error);
-        string[] errorSplit = _httpRequest.error.Split(' ');
-        _failHandler(_httpRequest, -1, "");
+
+        short errorCode = -1;
+        string errorMessage = _httpRequest.error;
+        try
+        {
+          errorCode = Convert.ToInt16(_httpRequest.error.Split(' ')[0]);
+        }
+        catch{}
+
+        
+        _failHandler(_httpRequest, errorCode, errorMessage);
       }
 
       _httpRequest.Dispose();
