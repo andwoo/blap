@@ -15,7 +15,7 @@ namespace blap.framework.webdownloader.services
 
     public void SendRequest<T>(WebDownloadRequest request) where T : AbstractWebDownloadResponse
     {
-      WWWFactory.instance.CreateGetRequest().SendRequest(request.url, 
+      WWWFactory.instance.CreateGetRequest().SendGetRequest(request.url, 
       (delegate(WWW httpRequest)
       {
         downloadCompleteEvent((T)Activator.CreateInstance(typeof(T), new object[] { httpRequest, true, (short)-1, "" }));
