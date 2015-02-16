@@ -74,14 +74,10 @@ namespace blap.framework.www.httprequests
 
       if (string.IsNullOrEmpty(_httpRequest.error))
       {
-        Trace.Log("Request Success");
         _successHandler(_httpRequest);
       }
       else
       {
-        //404 Not Found
-        Trace.Log(_httpRequest.error);
-
         short errorCode = -1;
         string errorMessage = _httpRequest.error;
         try
@@ -90,7 +86,7 @@ namespace blap.framework.www.httprequests
         }
         catch{}
 
-        
+        Trace.Log("GET request error: " + errorMessage);
         _failHandler(_httpRequest, errorCode, errorMessage);
       }
 
