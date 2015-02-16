@@ -1,4 +1,5 @@
-﻿using blap.framework.webdownloader.events;
+﻿using blap.framework.debug.utils;
+using blap.framework.webdownloader.events;
 using blap.framework.webdownloader.interfaces;
 using blap.framework.webdownloader.requests;
 using blap.framework.webdownloader.responses;
@@ -12,24 +13,25 @@ namespace blap.framework.webdownloader.commands
     public IWebDownloadService service { get; set; }
 
     private string _url;
-    private WebDownloadEvent _successEvent;
+    private WebDownloadEvent _completeEvent;
 
-    protected void SendRequest<T>(WebDownloadRequest request, WebDownloadEvent successEvent) where T : AbstractWebDownloadResponse
+    protected void SendRequest<T>(WebDownloadRequest request, WebDownloadEvent completeEvent) where T : AbstractWebDownloadResponse
     {
       this.Retain();
       _url = request.url;
-      _successEvent = successEvent;
+      _completeEvent = completeEvent;
       service.downloadCompleteEvent += OnDownloadFinished;
       service.SendRequest<T>(request);
     }
 
     private void OnDownloadFinished(AbstractWebDownloadResponse response)
     {
-      //move this to a base command?
       if (response.downloadPath == _url)
       {
+        Trace.Log("Download success: " + response.success);
+        Trace.Log("Download downloadPath: " + response.downloadPath);
         service.downloadCompleteEvent -= OnDownloadFinished;
-        dispatcher.Dispatch(_successEvent, response);
+        dispatcher.Dispatch(_completeEvent, response);
         this.Release();
       }
     }

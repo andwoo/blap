@@ -1,4 +1,5 @@
 ﻿using blap.framework.coroutinerunner.interfaces;
+using blap.framework.debug.utils;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -64,18 +65,26 @@ namespace blap.framework.www.httprequests
 
     IEnumerator StartHttpRequest()
     {
+      float timeSpent = Time.realtimeSinceStartup;
+      Trace.Log("starting GET Request to " + _httpRequest.url);
       yield return _httpRequest;
+      timeSpent = Time.realtimeSinceStartup - timeSpent;
+      Trace.Log("GET Request to " + _httpRequest.url + " took " + timeSpent.ToString() + " seconds");
 
       if (string.IsNullOrEmpty(_httpRequest.error))
       {
+        Trace.Log("Request Success");
         _successHandler(_httpRequest);
       }
       else
       {
-        //handle error
+        Trace.Log(_httpRequest.error);
         string[] errorSplit = _httpRequest.error.Split(' ');
         _failHandler(_httpRequest, -1, "");
       }
+
+      _httpRequest.Dispose();
+      _httpRequest = null;
     }
   }
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 namespace blap.framework.webdownloader.responses
 {
-  class WebDownloadTextureResponse : AbstractWebDownloadResponse
+  public class WebDownloadTextureResponse : AbstractWebDownloadResponse
   {
     public Texture2D texture2D { get; private set; }
 
