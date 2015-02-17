@@ -13,20 +13,29 @@ namespace blap.framework.www.httprequests
   abstract class AbstractHttpRequest
   {
     private ISimpleRoutineRunner _runner;
-    private WWW _httpRequest;
     private OnGetRequestSuccessHandler _successHandler;
     private OnGetRequestFailedHandler _failHandler;
+
+    //www vars
+    private WWW _httpRequest;
+    private string _url;
+    private byte[] _postData;
+    Dictionary<string, string> _headers;
 
     //timeout vars
     private bool _abortTimeout;
     private bool _timedOut;
     private int _timeoutLimit = 5;
-    private float _currentTimeoutTime;
+    private float _timeoutCount;
+
+    //retry vars
+    private short _retryLimit = 3;
+    private short _retryCount;
 
     public AbstractHttpRequest(ISimpleRoutineRunner runner)
     {
       _runner = runner;
-      _currentTimeoutTime = 0f;
+      _retryCount = 1;
     }
 
     protected Dictionary<string, string> GetHeaders(IDictionary<string, string> headers, bool nocache)
@@ -48,24 +57,51 @@ namespace blap.framework.www.httprequests
 
     protected void SendRequest(string url, byte[] postData, Dictionary<string, string> headers, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
-      _httpRequest = new WWW(url, postData, headers);
+      _url = url;
+      _postData = postData;
+      _headers = headers;
       _successHandler = onSuccessHandler;
       _failHandler = onFailHandler;
+      RunRequest();
+    }
+
+    private void RunRequest()
+    {
+      _httpRequest = new WWW(_url, _postData, _headers);
+      _timeoutCount = 0f;
+      _abortTimeout = false;
+      _timedOut = false;
       _runner.RunRoutine(StartHttpRequest());
       _runner.RunRoutine(StartTimeout());
+    }
+
+    private void RequestFailed(short errorCode, string errorMessage)
+    {
+      if (++_retryCount > _retryLimit)
+      {
+        _failHandler(_httpRequest, errorCode, errorMessage);
+        _httpRequest.Dispose();
+        _httpRequest = null;
+      }
+      else
+      {
+        _httpRequest.Dispose();
+        _httpRequest = null;
+        RunRequest();
+      }
     }
 
     private IEnumerator StartHttpRequest()
     {
       float timeSpent = Time.realtimeSinceStartup;
-      Trace.Log("starting GET Request to " + _httpRequest.url);
+      Trace.Log(string.Format("[{0}/{1}] starting GET Request to {2}", _retryCount, _retryLimit, _httpRequest.url));
       yield return _httpRequest;
 
       if (!_timedOut)
       {
          _abortTimeout = true;
         timeSpent = Time.realtimeSinceStartup - timeSpent;
-        Trace.Log("GET Request to " + _httpRequest.url + " took " + timeSpent.ToString() + " seconds");
+        Trace.Log(string.Format("[{0}/{1}] GET Request to {2} took {3} seconds", _retryCount, _retryLimit, _httpRequest.url, timeSpent.ToString()));
 
         if (string.IsNullOrEmpty(_httpRequest.error))
         {
@@ -81,39 +117,28 @@ namespace blap.framework.www.httprequests
           }
           catch { }
 
-          Trace.Log("GET request error: " + errorMessage);
-          _failHandler(_httpRequest, errorCode, errorMessage);
+          Trace.Log(string.Format("[{0}/{1}] GET Request error {2}", _retryCount, _retryLimit, errorMessage));
+          RequestFailed(errorCode, errorMessage);
         }
 
         _httpRequest.Dispose();
         _httpRequest = null;
       }
-      else
-      {
-        Trace.Log("Aborting main request routine");
-      }
     }
 
     private IEnumerator StartTimeout()
     {
-      while (!_abortTimeout && _currentTimeoutTime < _timeoutLimit)
+      while (!_abortTimeout && _timeoutCount < _timeoutLimit)
       {
-        _currentTimeoutTime += _runner.DeltaTime();
-        Trace.Log("_currentTimeoutTime: " + _currentTimeoutTime);
+        _timeoutCount += _runner.DeltaTime();
         yield return new WaitForFixedUpdate();
       }
 
       if (!_abortTimeout)
       {
-        Trace.Log("Request " + _httpRequest.url + " timed out after " + _timeoutLimit.ToString() + "seconds");
+        Trace.Log(string.Format("[{0}/{1}] GET Request {2} timed out after {3} seconds", _retryCount, _retryLimit, _httpRequest.url, _timeoutLimit));
         _timedOut = true;
-        _failHandler(_httpRequest, (short)-1, "Request timed out");
-        _httpRequest.Dispose();
-        _httpRequest = null;
-      }
-      else
-      {
-        Trace.Log("Request timed out check aborted");
+        RequestFailed((short)-1, "Request timed out");
       }
     }
   }
