@@ -12,12 +12,16 @@ namespace blap.framework.www.httprequests
 
   abstract class AbstractHttpRequest
   {
+    private ISimpleRoutineRunner _runner;
+    private WWW _httpRequest;
+    private OnGetRequestSuccessHandler _successHandler;
+    private OnGetRequestFailedHandler _failHandler;
+
+    //timeout vars
+    private bool _abortTimeout;
+    private bool _timedOut;
     private int _timeoutLimit = 5;
     private float _currentTimeoutTime;
-    private ISimpleRoutineRunner _runner;
-    protected WWW _httpRequest;
-    protected OnGetRequestSuccessHandler _successHandler;
-    protected OnGetRequestFailedHandler _failHandler;
 
     public AbstractHttpRequest(ISimpleRoutineRunner runner)
     {
@@ -42,11 +46,13 @@ namespace blap.framework.www.httprequests
       return (Dictionary<string, string>)headers;
     }
 
-    protected void SendRequest(OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
+    protected void SendRequest(string url, byte[] postData, Dictionary<string, string> headers, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
+      _httpRequest = new WWW(url, postData, headers);
       _successHandler = onSuccessHandler;
       _failHandler = onFailHandler;
       _runner.RunRoutine(StartHttpRequest());
+      _runner.RunRoutine(StartTimeout());
     }
 
     private IEnumerator StartHttpRequest()
@@ -54,37 +60,60 @@ namespace blap.framework.www.httprequests
       float timeSpent = Time.realtimeSinceStartup;
       Trace.Log("starting GET Request to " + _httpRequest.url);
       yield return _httpRequest;
-      timeSpent = Time.realtimeSinceStartup - timeSpent;
-      Trace.Log("GET Request to " + _httpRequest.url + " took " + timeSpent.ToString() + " seconds");
 
-      if (string.IsNullOrEmpty(_httpRequest.error))
+      if (!_timedOut)
       {
-        _successHandler(_httpRequest);
+         _abortTimeout = true;
+        timeSpent = Time.realtimeSinceStartup - timeSpent;
+        Trace.Log("GET Request to " + _httpRequest.url + " took " + timeSpent.ToString() + " seconds");
+
+        if (string.IsNullOrEmpty(_httpRequest.error))
+        {
+          _successHandler(_httpRequest);
+        }
+        else
+        {
+          short errorCode = -1;
+          string errorMessage = _httpRequest.error;
+          try
+          {
+            errorCode = Convert.ToInt16(_httpRequest.error.Split(' ')[0]);
+          }
+          catch { }
+
+          Trace.Log("GET request error: " + errorMessage);
+          _failHandler(_httpRequest, errorCode, errorMessage);
+        }
+
+        _httpRequest.Dispose();
+        _httpRequest = null;
       }
       else
       {
-        short errorCode = -1;
-        string errorMessage = _httpRequest.error;
-        try
-        {
-          errorCode = Convert.ToInt16(_httpRequest.error.Split(' ')[0]);
-        }
-        catch { }
-
-        Trace.Log("GET request error: " + errorMessage);
-        _failHandler(_httpRequest, errorCode, errorMessage);
+        Trace.Log("Aborting main request routine");
       }
-
-      _httpRequest.Dispose();
-      _httpRequest = null;
     }
 
     private IEnumerator StartTimeout()
     {
-      while (_currentTimeoutTime < _timeoutLimit && _httpRequest != null)
+      while (!_abortTimeout && _currentTimeoutTime < _timeoutLimit)
       {
         _currentTimeoutTime += _runner.DeltaTime();
+        Trace.Log("_currentTimeoutTime: " + _currentTimeoutTime);
         yield return new WaitForFixedUpdate();
+      }
+
+      if (!_abortTimeout)
+      {
+        Trace.Log("Request " + _httpRequest.url + " timed out after " + _timeoutLimit.ToString() + "seconds");
+        _timedOut = true;
+        _failHandler(_httpRequest, (short)-1, "Request timed out");
+        _httpRequest.Dispose();
+        _httpRequest = null;
+      }
+      else
+      {
+        Trace.Log("Request timed out check aborted");
       }
     }
   }

@@ -14,20 +14,17 @@ namespace blap.framework.www.httprequests
 
     public void SendGetRequest(string url, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
-      _httpRequest = new WWW(url);
-      base.SendRequest(onSuccessHandler, onFailHandler);
+      base.SendRequest(url, null, null, onSuccessHandler, onFailHandler);
     }
 
     public void SendGetRequest(string url, bool nocache, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
-      _httpRequest = new WWW(url, null, GetHeaders(null, nocache));
-      base.SendRequest(onSuccessHandler, onFailHandler);
+      base.SendRequest(url, null, GetHeaders(null, nocache), onSuccessHandler, onFailHandler);
     }
 
     public void SendGetRequest(string url, bool nocache, IDictionary<string, string> headers, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
-      _httpRequest = new WWW(url, null, GetHeaders(headers, nocache));
-      base.SendRequest(onSuccessHandler, onFailHandler);
+      base.SendRequest(url, null, GetHeaders(headers, nocache), onSuccessHandler, onFailHandler);
     }
   }
 }
