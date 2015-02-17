@@ -17,9 +17,9 @@ namespace blap.framework.www.factories
       _runner = runner;
     }
 
-    public GetRequest CreateGetRequest()
+    public GetRequest CreateGetRequest(float timeOutLimit, short retryLimit, bool useBackoff)
     {
-      return new GetRequest(_runner);
+      return new GetRequest(_runner, timeOutLimit, retryLimit, useBackoff);
     }
   }
 }

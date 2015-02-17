@@ -10,7 +10,7 @@ namespace blap.framework.webdownloader.commands
     {
       if (!string.IsNullOrEmpty((string)evt.data))
       {
-        SendRequest<WebDownloadTextureResponse>(new WebDownloadRequest((string)evt.data), WebDownloadEvent.DOWNLOAD_TEXTURE_COMPLETE);
+        SendRequest<WebDownloadTextureResponse>(new WebDownloadRequest((string)evt.data, 5f, 3, true), WebDownloadEvent.DOWNLOAD_TEXTURE_COMPLETE);
       }
     }
   }

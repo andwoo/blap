@@ -28,10 +28,6 @@ namespace blap.framework.webdownloader.commands
     {
       if (response.url == _url)
       {
-        Trace.Log("Download success: " + response.success);
-        Trace.Log("Download downloadPath: " + response.url);
-        Trace.Log("Download errocode: " + response.httpErrorCode);
-        Trace.Log("Download errormsg: " + response.httpErrorMessage);
         service.downloadCompleteEvent -= OnDownloadFinished;
         dispatcher.Dispatch(_completeEvent, response);
         this.Release();

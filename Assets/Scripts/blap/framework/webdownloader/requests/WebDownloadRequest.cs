@@ -3,10 +3,16 @@
   class WebDownloadRequest
   {
     public string url { get; private set; }
+    public float timeOutLimit { get; private set; }
+    public short retryLimit { get; private set; }
+    public bool useBackoff { get; private set; }
 
-    public WebDownloadRequest(string downloadUrl)
+    public WebDownloadRequest(string downloadUrl, float timeoutLimitSeconds, short retryCount, bool backoff)
     {
       url = downloadUrl;
+      timeOutLimit = timeoutLimitSeconds;
+      retryLimit = retryCount;
+      useBackoff = backoff;
     }
   }
 }

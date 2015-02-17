@@ -184,10 +184,10 @@ namespace blap.framework.debug.views
 
       if (!string.IsNullOrEmpty(input))
       {
-        input = input.Trim().ToLowerInvariant();
+        input = input.Trim();
         InsertLogMessage(input, LogType.Log);
         string[] paramaters = input.Split(' ');
-        InputCommandDispatcher(paramaters[0], paramaters.Length > 1 ? paramaters.SubArray(1) : null);
+        InputCommandDispatcher(paramaters[0].ToLowerInvariant(), paramaters.Length > 1 ? paramaters.SubArray(1) : null);
       }
     }
 

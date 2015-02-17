@@ -9,8 +9,8 @@ namespace blap.framework.www.httprequests
 {
   class GetRequest : AbstractHttpRequest
   {
-    public GetRequest(ISimpleRoutineRunner runner)
-      : base(runner) {}
+    public GetRequest(ISimpleRoutineRunner runner, float timeOutLimit, short retryLimit, bool useBackoff)
+      : base(runner, timeOutLimit, retryLimit, useBackoff) { }
 
     public void SendGetRequest(string url, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
