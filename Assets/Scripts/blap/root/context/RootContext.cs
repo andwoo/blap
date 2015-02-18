@@ -6,6 +6,10 @@ using blap.framework.debug.mediators;
 using blap.framework.debug.models;
 using blap.framework.debug.utils;
 using blap.framework.debug.views;
+using blap.framework.facebook.commands;
+using blap.framework.facebook.events;
+using blap.framework.facebook.interfaces;
+using blap.framework.facebook.services;
 using blap.framework.webdownloader.commands;
 using blap.framework.webdownloader.events;
 using blap.framework.webdownloader.interfaces;
@@ -69,7 +73,9 @@ namespace blap.root.context
         ICommandContainer debugCommands = new CommandContainer();
         debugCommands.AddCommand("clr", DebugConsoleEvent.CLEAR_CONSOLE);
         debugCommands.AddCommand("clear", DebugConsoleEvent.CLEAR_CONSOLE);
-        debugCommands.AddCommand("dl_img", WebDownloadEvent.DOWNLOAD_TEXTURE); //make the string[] params  a single string if only 1 unit
+        debugCommands.AddCommand("dl_img", WebDownloadEvent.DOWNLOAD_TEXTURE);
+        debugCommands.AddCommand("fb_init", FacebookServiceEvent.INITIALIZE);
+        debugCommands.AddCommand("fb_login", FacebookServiceEvent.LOGIN);
         injectionBinder.Bind<ICommandContainer>().ToValue(debugCommands).ToSingleton();
       #endregion
     }
@@ -92,6 +98,10 @@ namespace blap.root.context
         Trace.Log("CoroutineRunner was not found on ContextView", LogType.Error);
       }
       #endregion
+
+      #region facebook
+        injectionBinder.Bind<IFacebookService>().To<FacebookService>().ToSingleton();
+      #endregion
     }
 
     private void MapCommands()
@@ -103,15 +113,17 @@ namespace blap.root.context
       #region web_downloader
         commandBinder.Bind(WebDownloadEvent.DOWNLOAD_TEXTURE).To<DownloadTextureCommand>();
       #endregion
+
+      #region facebook
+        commandBinder.Bind(FacebookServiceEvent.INITIALIZE).To<FacebookInitializeCommand>();
+        commandBinder.Bind(FacebookServiceEvent.LOGIN).To<FacebookLoginCommand>();
+      #endregion
     }
 
     private void MapDebugCommands()
     {
       #region debug_console
         commandBinder.Bind(DebugConsoleEvent.COMMAND_ENTERED).To<DebugRouteCommand>();
-      #endregion
-
-      #region debug_commands
       #endregion
     }
   }
