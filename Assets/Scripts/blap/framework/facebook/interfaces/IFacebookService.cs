@@ -1,4 +1,5 @@
-﻿namespace blap.framework.facebook.interfaces
+﻿using System;
+namespace blap.framework.facebook.interfaces
 {
   interface IFacebookService
   {
@@ -15,12 +16,31 @@
     /// <param name="authResponse">effective in Web Player only, rarely used A Facebook auth_response you have cached to preserve a session, represented in JSON. If an auth_response is provided, FB will initialize itself using the data from that session, with no additional checks.</param> 
     void Initialize(Facebook.InitDelegate onInitComplete, Facebook.HideUnityDelegate hideUnityDelegate, string authResponse);
     /// <summary>
+    /// Check the user's authorization status. false if the user has not logged into Facebook, or hasn't authorized your app; true otherwise. Most often, this will be in the logic that determines whether to show a login control.
+    /// </summary>
+    /// <returns>The authorization status</returns>
+    bool IsLoggedIn();
+    /// <summary>
     /// Login using Facebook SDK
     /// </summary>
     /// <param name="scope">A list of Facebook permissions requested from the user</param>
     /// <param name="callback">A delegate that will be passed a FBResult object. A platform-independent representation is available from the properties FB.UserId and FB.AccessToken, and via the boolean FB.IsLoggedIn.</param>
     void Login(string scope, Facebook.FacebookDelegate callback);
-
-    bool IsLoggedIn();
+    /// <summary>
+    /// The access token granted to your app when the user most recently authorized it; otherwise, an empty string. This value is used implicitly for any FB-namespace method that requires an access token.
+    /// </summary>
+    /// <returns>Access token granted to your app</returns>
+    string GetAccessToken();
+    /// <summary>
+    /// Returns a bool representing if the access token is expired meaning the user no longer has a valid session with Facebook.
+    /// </summary>
+    /// <param name="currentDate"></param>
+    /// <returns></returns>
+    bool IsAccessTokenExpired(DateTime currentDate);
+    /// <summary>
+    /// The user's Facebook user ID, when a user is logged in and has authorized your app, or an empty string if not.
+    /// </summary>
+    /// <returns></returns>
+    string GetUserId();
   }
 }

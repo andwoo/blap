@@ -1,5 +1,6 @@
 ﻿using blap.framework.facebook.interfaces;
 using Facebook;
+using System;
 
 namespace blap.framework.facebook.services
 {
@@ -20,14 +21,41 @@ namespace blap.framework.facebook.services
       }
     }
 
+    public bool IsLoggedIn()
+    {
+      return FB.IsLoggedIn;
+    }
+
     public void Login(string scope, FacebookDelegate callback)
     {
       FB.Login(scope, callback);
     }
 
-    public bool IsLoggedIn()
+    public string GetAccessToken()
     {
-      return FB.IsLoggedIn;
+      return FB.AccessToken;
+    }
+
+    public bool IsAccessTokenExpired(DateTime currentDate)
+    {
+      if(IsLoggedIn())
+      {
+        int compare = currentDate.CompareTo(FB.AccessTokenExpiresAt);
+        if(compare > 0)
+        {
+          return true;
+        }
+        return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
+
+    public string GetUserId()
+    {
+      return FB.UserId;
     }
   }
 }

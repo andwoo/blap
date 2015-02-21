@@ -21,7 +21,7 @@ namespace blap.framework.facebook.commands
       if(fbService.IsLoggedIn())
       {
         Trace.Log("LOGIN_COMPLETE_SUCCESS");
-        dispatcher.Dispatch(FacebookServiceEvent.LOGIN_COMPLETE_SUCCESS);
+        dispatcher.Dispatch(FacebookServiceEvent.LOGIN_COMPLETE_SUCCESS, fbService.GetAccessToken());
       }
       else
       {
