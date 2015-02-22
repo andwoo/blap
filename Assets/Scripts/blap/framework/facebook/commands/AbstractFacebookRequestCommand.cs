@@ -37,7 +37,6 @@ namespace blap.framework.facebook.commands
 
     private void OnLoginRequestComplete(AbstractFacebookResponse response)
     {
-      Trace.Log("LOGIN REQUEST COMPLETE BITCH");
       dispatcher.Dispatch(_completeEvent, response);
       this.Release();
     }

@@ -18,6 +18,9 @@
 
     /* Get friends */
     GET_FRIENDS,
-    GET_FRIENDS_COMPLETE
+    GET_FRIENDS_COMPLETE,
+
+    GET_USER_DETAILS,
+    GET_USER_DETAILS_COMPLETE
   }
 }

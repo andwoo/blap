@@ -1,4 +1,5 @@
-﻿using Facebook;
+﻿using blap.framework.utils;
+using Facebook;
 using System.Collections.Generic;
 
 namespace blap.framework.facebook.requests
@@ -6,8 +7,8 @@ namespace blap.framework.facebook.requests
   abstract class AbstractFacebookApiRequest
   {
     private string _call;
+    private Dictionary<string, string> _urlParameters;
     public HttpMethod httpMethod { get; private set; }
-    public Dictionary<string, string> urlParameters { get; private set; }
     public Dictionary<string, string> postData { get; private set; }
 
     public AbstractFacebookApiRequest(string apiCall, HttpMethod method)
@@ -18,24 +19,34 @@ namespace blap.framework.facebook.requests
 
     public string GetApiCall()
     {
-      return _call;
+      return _urlParameters != null ? _call + DictionaryUtils.ToQueryString(_urlParameters, false) : _call;
     }
 
     protected void AddUrlParameter(string key, string parameter)
     {
-      if (urlParameters == null)
+      if (string.IsNullOrEmpty(parameter))
       {
-        urlParameters = new Dictionary<string, string>();
+        return;
       }
 
-      if (!urlParameters.ContainsKey(key))
+      if (_urlParameters == null)
       {
-        urlParameters.Add(key, parameter);
+        _urlParameters = new Dictionary<string, string>();
+      }
+
+      if (!_urlParameters.ContainsKey(key))
+      {
+        _urlParameters.Add(key, parameter);
       }
     }
 
     protected void AddPostDataParameter(string key, string data)
     {
+      if (string.IsNullOrEmpty(data))
+      {
+        return;
+      }
+
       if (postData == null)
       {
         postData = new Dictionary<string, string>();

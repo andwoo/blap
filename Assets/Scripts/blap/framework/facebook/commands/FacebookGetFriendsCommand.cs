@@ -8,7 +8,7 @@ namespace blap.framework.facebook.commands
   {
     public override void Execute()
     {
-      SendApiRequest<FacebookFriendsApiResponse>(new FacebookFriendsApiRequest(evt.data != null ? (string)evt.data : ""), FacebookServiceEvent.GET_FRIENDS_COMPLETE);
+      SendApiRequest<FacebookFriendsResponse>(new FacebookFriendsRequest(evt.data != null ? (string)evt.data : ""), FacebookServiceEvent.GET_FRIENDS_COMPLETE);
     }
   }
 }
