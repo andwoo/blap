@@ -1,8 +1,17 @@
-﻿using System;
+﻿using blap.framework.facebook.requests;
+using blap.framework.facebook.responses;
+using System;
+
 namespace blap.framework.facebook.interfaces
 {
+  public delegate void ApiCompleteHandler(AbstractFacebookApiResponse response);
+
   interface IFacebookService
   {
+    /// <summary>
+    /// Calling ActivateApp notifies Facebook of the installation of your app. Use this if you're planning to use the mobile app install ads feature. Your impressions will be a function of, among other things, the number of installs you get.
+    /// </summary>
+    void ActivateApp();
     /// <summary>
     /// Returns a bool indicating if the Facebook SDK has been initialized
     /// </summary>
@@ -42,5 +51,7 @@ namespace blap.framework.facebook.interfaces
     /// </summary>
     /// <returns></returns>
     string GetUserId();
+
+    void SendApiRequest<T>(AbstractFacebookApiRequest request, ApiCompleteHandler completeHandler) where T : AbstractFacebookApiResponse;
   }
 }

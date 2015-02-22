@@ -23,6 +23,7 @@ namespace blap.framework.facebook.commands
     {
       Trace.Log("INITIALIZE_COMPLETE");
       dispatcher.Dispatch(FacebookServiceEvent.INITIALIZE_COMPLETE);
+      this.Release();
     }
 
     private void OnAppMinimized(bool isUnityShown)

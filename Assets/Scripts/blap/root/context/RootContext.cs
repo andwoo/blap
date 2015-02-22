@@ -71,11 +71,14 @@ namespace blap.root.context
     {
       #region debug_console
         ICommandContainer debugCommands = new CommandContainer();
-        debugCommands.AddCommand("clr", DebugConsoleEvent.CLEAR_CONSOLE);
+        debugCommands.AddCommand("cls", DebugConsoleEvent.CLEAR_CONSOLE);
         debugCommands.AddCommand("clear", DebugConsoleEvent.CLEAR_CONSOLE);
         debugCommands.AddCommand("dl_img", WebDownloadEvent.DOWNLOAD_TEXTURE);
+        debugCommands.AddCommand("fb_act", FacebookServiceEvent.ACTIVATE_APP);
         debugCommands.AddCommand("fb_init", FacebookServiceEvent.INITIALIZE);
         debugCommands.AddCommand("fb_login", FacebookServiceEvent.LOGIN);
+        debugCommands.AddCommand("fb_friends", FacebookServiceEvent.GET_FRIENDS);
+        
         injectionBinder.Bind<ICommandContainer>().ToValue(debugCommands).ToSingleton();
       #endregion
     }
@@ -117,6 +120,8 @@ namespace blap.root.context
       #region facebook
         commandBinder.Bind(FacebookServiceEvent.INITIALIZE).To<FacebookInitializeCommand>();
         commandBinder.Bind(FacebookServiceEvent.LOGIN).To<FacebookLoginCommand>();
+        commandBinder.Bind(FacebookServiceEvent.ACTIVATE_APP).To<FacebookActivateAppCommand>();
+        commandBinder.Bind(FacebookServiceEvent.GET_FRIENDS).To<FacebookGetFriendsCommand>();
       #endregion
     }
 
