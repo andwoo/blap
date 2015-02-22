@@ -4,7 +4,7 @@ using blap.framework.facebook.responses;
 
 namespace blap.framework.facebook.commands
 {
-  class FacebookGetFriendsCommand : AbstractFacebookApiRequestCommand
+  class FacebookGetFriendsCommand : AbstractFacebookRequestCommand
   {
     public override void Execute()
     {

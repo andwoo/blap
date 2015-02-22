@@ -21,7 +21,6 @@ namespace blap.framework.facebook.commands
 
     private void OnInitializeComplete()
     {
-      Trace.Log("INITIALIZE_COMPLETE");
       dispatcher.Dispatch(FacebookServiceEvent.INITIALIZE_COMPLETE);
       this.Release();
     }
@@ -30,12 +29,10 @@ namespace blap.framework.facebook.commands
     {
       if (isUnityShown)
       {
-        Trace.Log("INITIALIZE_UNITY_RESUME");
         dispatcher.Dispatch(FacebookServiceEvent.INITIALIZE_UNITY_RESUME);
       }
       else
       {
-        Trace.Log("INITIALIZE_UNITY_MINIMIZE");
         dispatcher.Dispatch(FacebookServiceEvent.INITIALIZE_UNITY_MINIMIZE);
       }
     }

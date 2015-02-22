@@ -34,9 +34,12 @@ namespace blap.framework.facebook.services
       return FB.IsLoggedIn;
     }
 
-    public void Login(string scope, FacebookDelegate callback)
+    public void Login<T>(string scope, LoginCompleteHandler completeHandler) where T : AbstractFacebookResponse
     {
-      FB.Login(scope, callback);
+      FB.Login(scope, (delegate(FBResult result)
+      {
+        completeHandler((AbstractFacebookResponse)Activator.CreateInstance(typeof(T), new object[] { result }));
+      }));
     }
 
     public string GetAccessToken()
@@ -71,7 +74,6 @@ namespace blap.framework.facebook.services
       Trace.Log("Facebook request to: " + request.GetApiCall());
       FB.API(request.GetApiCall(), request.httpMethod, (delegate(FBResult result)
       {
-        Trace.Log("Facebook request complete");
         completeHandler((AbstractFacebookApiResponse)Activator.CreateInstance(typeof(T), new object[] { result }));
       }), request.postData);
     }

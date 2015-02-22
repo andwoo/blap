@@ -4,6 +4,7 @@ using System;
 
 namespace blap.framework.facebook.interfaces
 {
+  public delegate void LoginCompleteHandler(AbstractFacebookResponse response);
   public delegate void ApiCompleteHandler(AbstractFacebookApiResponse response);
 
   interface IFacebookService
@@ -33,8 +34,8 @@ namespace blap.framework.facebook.interfaces
     /// Login using Facebook SDK
     /// </summary>
     /// <param name="scope">A list of Facebook permissions requested from the user</param>
-    /// <param name="callback">A delegate that will be passed a FBResult object. A platform-independent representation is available from the properties FB.UserId and FB.AccessToken, and via the boolean FB.IsLoggedIn.</param>
-    void Login(string scope, Facebook.FacebookDelegate callback);
+    /// <param name="callback">A delegate that will be passed a AbstractFacebookResponse object. A platform-independent representation is available from the properties FB.UserId and FB.AccessToken, and via the boolean FB.IsLoggedIn.</param>
+    void Login<T>(string scope, LoginCompleteHandler completeHandler) where T : AbstractFacebookResponse;
     /// <summary>
     /// The access token granted to your app when the user most recently authorized it; otherwise, an empty string. This value is used implicitly for any FB-namespace method that requires an access token.
     /// </summary>
