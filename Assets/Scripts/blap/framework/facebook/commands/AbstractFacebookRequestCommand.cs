@@ -1,5 +1,4 @@
-﻿using blap.framework.debug.utils;
-using blap.framework.facebook.events;
+﻿using blap.framework.facebook.events;
 using blap.framework.facebook.interfaces;
 using blap.framework.facebook.requests;
 using blap.framework.facebook.responses;
@@ -23,7 +22,6 @@ namespace blap.framework.facebook.commands
 
     private void OnApiRequestComplete(AbstractFacebookApiResponse response)
     {
-      Trace.Log("API REQUEST COMPLETE BITCH");
       dispatcher.Dispatch(_completeEvent, response);
       this.Release();
     }
