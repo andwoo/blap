@@ -6,20 +6,20 @@ namespace blap.framework.facebook.requests
 {
   abstract class AbstractFacebookApiRequest
   {
-    private string _call;
+    private string _apiCall;
     private Dictionary<string, string> _urlParameters;
     public HttpMethod httpMethod { get; private set; }
     public Dictionary<string, string> postData { get; private set; }
 
     public AbstractFacebookApiRequest(string apiCall, HttpMethod method)
     {
-      _call = apiCall;
+      _apiCall = apiCall;
       httpMethod = method;
     }
 
     public string GetApiCall()
     {
-      return _urlParameters != null ? _call + DictionaryUtils.ToQueryString(_urlParameters, false) : _call;
+      return _urlParameters != null ? _apiCall + DictionaryUtils.ToQueryString(_urlParameters, false) : _apiCall;
     }
 
     protected void AddUrlParameter(string key, string parameter)

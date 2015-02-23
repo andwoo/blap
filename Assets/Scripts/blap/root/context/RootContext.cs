@@ -79,6 +79,7 @@ namespace blap.root.context
         debugCommands.AddCommand("fb_login", FacebookServiceEvent.LOGIN);
         debugCommands.AddCommand("fb_friends", FacebookServiceEvent.GET_FRIENDS);
         debugCommands.AddCommand("fb_me", FacebookServiceEvent.GET_USER_DETAILS);
+        debugCommands.AddCommand("fb_perms", FacebookServiceEvent.GET_USER_PERMISSIONS);
         
         injectionBinder.Bind<ICommandContainer>().ToValue(debugCommands).ToSingleton();
       #endregion
@@ -124,6 +125,7 @@ namespace blap.root.context
         commandBinder.Bind(FacebookServiceEvent.ACTIVATE_APP).To<FacebookActivateAppCommand>();
         commandBinder.Bind(FacebookServiceEvent.GET_FRIENDS).To<FacebookGetFriendsCommand>();
         commandBinder.Bind(FacebookServiceEvent.GET_USER_DETAILS).To<FacebookGetUserDetailsCommand>();
+        commandBinder.Bind(FacebookServiceEvent.GET_USER_PERMISSIONS).To<FacebookUserPermissionsCommand>();
       #endregion
     }
 

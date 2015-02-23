@@ -2,7 +2,7 @@
 
 namespace blap.framework.facebook.responses
 {
-  public class FacebookLoginResponse : AbstractFacebookResponse
+  class FacebookLoginResponse : AbstractFacebookResponse
   {
     public bool isLoggedIn { get; private set; }
     public string userId { get; private set; }
@@ -12,7 +12,7 @@ namespace blap.framework.facebook.responses
     public FacebookLoginResponse(FBResult result)
       : base(result)
     {
-      if (success)
+      if (base.success)
       {
         isLoggedIn = base.returnData["is_logged_in"];
         userId = base.returnData["user_id"];
