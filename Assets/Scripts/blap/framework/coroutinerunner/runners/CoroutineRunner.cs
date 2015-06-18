@@ -15,6 +15,7 @@ namespace coroutinerunner
         _isInitialized = true;
         GameObject obj = new GameObject();
         Object.DontDestroyOnLoad(obj);
+        obj.hideFlags = HideFlags.HideInHierarchy;
         _runner = obj.AddComponent<CoroutineRunnerGameObject>();
       }
     }

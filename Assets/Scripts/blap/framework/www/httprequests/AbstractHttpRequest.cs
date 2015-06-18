@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace blap.framework.www.httprequests
+namespace www
 {
   public delegate void OnGetRequestSuccessHandler(WWW httpRequest);
   public delegate void OnGetRequestFailedHandler(WWW httpRequest, short errorCode, string errorMessage);
@@ -34,43 +34,40 @@ namespace blap.framework.www.httprequests
     private short _retryCount;
     private bool _useBackoff;
 
-    public AbstractHttpRequest(float timeOutLimit, short retryLimit, bool useBackoff)
+    public AbstractHttpRequest(string url, byte[] postData, bool isJsonPostData, bool cacheBust, float timeOutLimit, short retryLimit, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {
       _timeoutLimit = timeOutLimit;
       _retryLimit = retryLimit;
       _retryCount = 1;
       _useBackoff = true;
+      _url = url;
+      _postData = postData;
+      _headers = GetHeaders(cacheBust, isJsonPostData);
+      _successHandler = onSuccessHandler;
+      _failHandler = onFailHandler;
+      _requestType = postData != null ? "POST" : "GET";
     }
 
-    protected Dictionary<string, string> GetHeaders(IDictionary<string, string> headers, bool nocache)
+    protected Dictionary<string, string> GetHeaders(bool cacheBust, bool isJsonPostData)
     {
-      if (headers == null)
-      {
-        headers = new Dictionary<string, string>();
-      }
+      Dictionary<string, string> headers = new Dictionary<string, string>();
 
-      if (nocache)
+      if (cacheBust)
       {
         headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
         headers.Add("Pragma", "no-cache"); // HTTP 1.0.
         headers.Add("Expires", "0"); // Proxies.
       }
 
-      return (Dictionary<string, string>)headers;
+      if (isJsonPostData)
+      {
+        headers.Add("Content-Type", "application/json");
+      }
+
+      return headers;
     }
 
-    protected void SendRequest(string url, byte[] postData, Dictionary<string, string> headers, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
-    {
-      _url = url;
-      _postData = postData;
-      _headers = headers;
-      _successHandler = onSuccessHandler;
-      _failHandler = onFailHandler;
-      _requestType = postData != null ? "POST" : "GET";
-      RunRequest();
-    }
-
-    private void RunRequest()
+    public void SendRequest()
     {
       _httpRequest = new WWW(_url, _postData, _headers);
       _timeoutCount = 0f;
@@ -98,7 +95,7 @@ namespace blap.framework.www.httprequests
         }
         else
         {
-          RunRequest();
+          SendRequest();
         }
       }
     }
@@ -107,7 +104,7 @@ namespace blap.framework.www.httprequests
     {
       Trace.Log(string.Format("Retrying request in {0} seconds", backOff));
       yield return new WaitForSeconds(backOff);
-      RunRequest();
+      SendRequest();
     }
 
     private IEnumerator StartHttpRequest()

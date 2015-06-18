@@ -1,25 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace blap.framework.www.httprequests
+﻿namespace www
 {
   public class GetRequest : AbstractHttpRequest
   {
-    public GetRequest(float timeOutLimit, short retryLimit, bool useBackoff)
-      : base(timeOutLimit, retryLimit, useBackoff) { }
-
-    public void SendGetRequest(string url, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
-    {
-      base.SendRequest(url, null, null, onSuccessHandler, onFailHandler);
-    }
-
-    public void SendGetRequest(string url, bool nocache, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
-    {
-      base.SendRequest(url, null, GetHeaders(null, nocache), onSuccessHandler, onFailHandler);
-    }
-
-    public void SendGetRequest(string url, bool nocache, IDictionary<string, string> headers, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
-    {
-      base.SendRequest(url, null, GetHeaders(headers, nocache), onSuccessHandler, onFailHandler);
-    }
+    public GetRequest(string url, bool cacheBust, float timeOutLimit, short retryLimit, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
+      : base(url, null, false, cacheBust, timeOutLimit, retryLimit, onSuccessHandler, onFailHandler)
+    { }
   }
 }
