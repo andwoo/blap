@@ -20,7 +20,7 @@ namespace blap.framework.facebook.responses
 
   class FacebookPermission
   {
-    public string permission;
-    public string status;
+    public string permission = string.Empty;
+    public string status = string.Empty;
   }
 }

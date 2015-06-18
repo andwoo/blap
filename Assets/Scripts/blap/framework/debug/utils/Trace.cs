@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using blap.framework.debug.views;
+using UnityEngine;
 
 namespace blap.framework.debug.utils
 {
@@ -11,6 +12,7 @@ namespace blap.framework.debug.utils
     /// <param name="type">The log type. ex. error, warning, log, ect...</param>
     public static void Log(object message, LogType type = LogType.Log)
     {
+#if UNITY_EDITOR
       switch (type)
       {
         case LogType.Error:
@@ -26,6 +28,10 @@ namespace blap.framework.debug.utils
           Debug.Log(message);
           break;
       }
+#else
+      DebugConsole.Log(message.ToString(), type);
+#endif
+
     }
   }
 }
