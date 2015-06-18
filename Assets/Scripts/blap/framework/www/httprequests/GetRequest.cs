@@ -1,16 +1,11 @@
-﻿using blap.framework.coroutinerunner.interfaces;
-using blap.framework.debug.utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace blap.framework.www.httprequests
 {
-  class GetRequest : AbstractHttpRequest
+  public class GetRequest : AbstractHttpRequest
   {
-    public GetRequest(ISimpleRoutineRunner runner, float timeOutLimit, short retryLimit, bool useBackoff)
-      : base(runner, timeOutLimit, retryLimit, useBackoff) { }
+    public GetRequest(float timeOutLimit, short retryLimit, bool useBackoff)
+      : base(timeOutLimit, retryLimit, useBackoff) { }
 
     public void SendGetRequest(string url, OnGetRequestSuccessHandler onSuccessHandler, OnGetRequestFailedHandler onFailHandler)
     {

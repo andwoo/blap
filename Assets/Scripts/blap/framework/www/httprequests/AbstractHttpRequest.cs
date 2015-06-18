@@ -1,5 +1,5 @@
-﻿using blap.framework.coroutinerunner.interfaces;
-using blap.framework.debug.utils;
+﻿using blap.framework.debug.utils;
+using coroutinerunner;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,14 +10,13 @@ namespace blap.framework.www.httprequests
   public delegate void OnGetRequestSuccessHandler(WWW httpRequest);
   public delegate void OnGetRequestFailedHandler(WWW httpRequest, short errorCode, string errorMessage);
 
-  abstract class AbstractHttpRequest
+  public abstract class AbstractHttpRequest
   {
     //completion handlers
     private OnGetRequestSuccessHandler _successHandler;
     private OnGetRequestFailedHandler _failHandler;
 
     //www vars
-    private ISimpleRoutineRunner _runner;
     private WWW _httpRequest;
     private string _url;
     private byte[] _postData;
@@ -35,9 +34,8 @@ namespace blap.framework.www.httprequests
     private short _retryCount;
     private bool _useBackoff;
 
-    public AbstractHttpRequest(ISimpleRoutineRunner runner, float timeOutLimit, short retryLimit, bool useBackoff)
+    public AbstractHttpRequest(float timeOutLimit, short retryLimit, bool useBackoff)
     {
-      _runner = runner;
       _timeoutLimit = timeOutLimit;
       _retryLimit = retryLimit;
       _retryCount = 1;
@@ -78,8 +76,8 @@ namespace blap.framework.www.httprequests
       _timeoutCount = 0f;
       _abortTimeout = false;
       _timedOut = false;
-      _runner.RunRoutine(StartHttpRequest());
-      _runner.RunRoutine(StartTimeout());
+      CoroutineRunner.StartCoroutine(StartHttpRequest());
+      CoroutineRunner.StartCoroutine(StartTimeout());
     }
 
     private void RequestFailed(short errorCode, string errorMessage)
@@ -96,7 +94,7 @@ namespace blap.framework.www.httprequests
         _httpRequest = null;
         if(_useBackoff)
         {
-          _runner.RunRoutine(ExponentialBackoff(Convert.ToSingle(Math.Pow(2, _retryCount) - 1)));
+          CoroutineRunner.StartCoroutine(ExponentialBackoff(Convert.ToSingle(Math.Pow(2, _retryCount) - 1)));
         }
         else
         {
@@ -150,7 +148,7 @@ namespace blap.framework.www.httprequests
     {
       while (!_abortTimeout && _timeoutCount < _timeoutLimit)
       {
-        _timeoutCount += _runner.DeltaTime();
+        _timeoutCount += Time.deltaTime;
         yield return new WaitForFixedUpdate();
       }
 

@@ -1,19 +1,42 @@
-﻿using blap.framework.coroutinerunner.interfaces;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
-namespace framework.coroutinerunner.runners
+namespace coroutinerunner
 {
-  public class CoroutineRunner : MonoBehaviour, ISimpleRoutineRunner
+  public class CoroutineRunner
   {
-    public void RunRoutine(IEnumerator routine)
+    private static bool _isInitialized = false;
+    private static ICoroutineRunner _runner = null;
+
+    private static void Initialize()
     {
-      base.StartCoroutine(routine);
+      if (!_isInitialized)
+      {
+        _isInitialized = true;
+        GameObject obj = new GameObject();
+        Object.DontDestroyOnLoad(obj);
+        _runner = obj.AddComponent<CoroutineRunnerGameObject>();
+      }
     }
 
-    public float DeltaTime()
+    public static Coroutine StartCoroutine(IEnumerator routine)
     {
-      return Time.deltaTime;
+      Initialize();
+      return _runner.StartCoroutine(routine);
+    }
+
+    public static void StopCoroutine(IEnumerator routine)
+    {
+      Initialize();
+      _runner.StopCoroutine(routine);
+    }
+
+    public static void StopCoroutine(Coroutine routine)
+    {
+      Initialize();
+      _runner.StopCoroutine(routine);
     }
   }
+
+  public class CoroutineRunnerGameObject : MonoBehaviour, ICoroutineRunner { }
 }

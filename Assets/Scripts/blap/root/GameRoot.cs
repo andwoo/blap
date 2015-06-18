@@ -12,7 +12,10 @@ namespace Assets.Scripts.blap.root
       DebugConsole console = go.GetComponent<DebugConsole>();
       console.AddInputCommandLister(delegate(string command, string[] args)
       {
-        Trace.Log("YUP: " + command);
+        if(command == "cls")
+        {
+          console.ClearLog();
+        }
       });
       Trace.Log("App Startup Complete");
     }
