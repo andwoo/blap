@@ -1,4 +1,6 @@
-﻿using TinyJSON;
+﻿#pragma warning disable 0219
+
+using TinyJSON;
 
 namespace blap.framework.extensions
 {

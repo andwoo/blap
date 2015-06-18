@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace coroutinerunner
 {
-  public class CoroutineRunner
+  public static class CoroutineRunner
   {
     private static bool _isInitialized = false;
     private static ICoroutineRunner _runner = null;
