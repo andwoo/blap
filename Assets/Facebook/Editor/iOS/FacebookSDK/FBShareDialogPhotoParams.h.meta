@@ -1,4 +1,16 @@
 fileFormatVersion: 2
-guid: a48d100c0d0a9443fbb71cfcfa900b8b
-DefaultImporter:
+guid: c4dd6db46519a4d20a41553048cacd87
+timeCreated: 1433462280
+licenseType: Pro
+PluginImporter:
+  serializedVersion: 1
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
+  platformData:
+    Any:
+      enabled: 1
+      settings: {}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

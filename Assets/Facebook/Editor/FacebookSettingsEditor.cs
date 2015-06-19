@@ -11,7 +11,9 @@ public class FacebookSettingsEditor : Editor
 {
     bool showFacebookInitSettings = false;
     bool showAndroidUtils = (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android);
-    bool showIOSSettings = (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iPhone);
+	// Unity renamed build target from iPhone to iOS in Unity 5, this keeps both versions happy
+    bool showIOSSettings = (EditorUserBuildSettings.activeBuildTarget.ToString() == "iPhone"
+	                        || EditorUserBuildSettings.activeBuildTarget.ToString() == "iOS");
 
     GUIContent appNameLabel = new GUIContent("App Name [?]:", "For your own use and organization.\n(ex. 'dev', 'qa', 'prod')");
     GUIContent appIdLabel = new GUIContent("App Id [?]:", "Facebook App Ids can be found at https://developers.facebook.com/apps");
@@ -42,6 +44,7 @@ public class FacebookSettingsEditor : Editor
         AndroidUtilGUI();
         IOSUtilGUI();
         AboutGUI();
+        BuildGUI();
     }
 
     private void AppIdGUI()
@@ -176,7 +179,7 @@ public class FacebookSettingsEditor : Editor
 
     private void AboutGUI()
     {
-        var versionInfo = FBBuildVersionAttribute.GetVersionAttributeOfType(typeof(IFacebook));
+        var versionInfo = FBBuildVersionAttribute.GetVersionAttributeOfType(typeof(AbstractFacebook));
         if (versionInfo == null)
         {
             EditorGUILayout.HelpBox("Cannot find version info on the Facebook SDK!", MessageType.Warning);
@@ -196,5 +199,20 @@ public class FacebookSettingsEditor : Editor
         EditorGUILayout.LabelField(label, GUILayout.Width(180), GUILayout.Height(16));
         EditorGUILayout.SelectableLabel(value, GUILayout.Height(16));
         EditorGUILayout.EndHorizontal();
+    }
+
+    private void BuildGUI()
+    {
+        if (GUILayout.Button("Build SDK Package")) {
+            try
+            {
+                FacebookBuild.ExportPackage();
+            }
+            catch (System.Exception e)
+            {
+                EditorUtility.DisplayDialog("Error Exporting unityPackage", e.Message, "Okay");
+            }
+            EditorUtility.DisplayDialog("Finished Exporting unityPackage", "Exported to CUI/SDKPackage", "Okay");
+        }
     }
 }

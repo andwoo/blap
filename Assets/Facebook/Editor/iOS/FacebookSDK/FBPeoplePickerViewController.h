@@ -68,12 +68,6 @@ typedef NS_ENUM(NSUInteger, FBFriendDisplayOrdering) {
 
 /*!
  @abstract
- A Boolean value that specifies whether multi-select is enabled.
- */
-@property (nonatomic) BOOL allowsMultipleSelection;
-
-/*!
- @abstract
  The profile ID of the user whose 'user_friends' permission is being used.
  */
 @property (nonatomic, copy) NSString *userID;
