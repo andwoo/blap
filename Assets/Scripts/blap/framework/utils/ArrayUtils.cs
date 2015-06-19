@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace blap.framework.utils
+namespace utils
 {
   //http://stackoverflow.com/questions/943635/c-sharp-arrays-getting-a-sub-array-from-an-existing-array
   static class ArrayUtils

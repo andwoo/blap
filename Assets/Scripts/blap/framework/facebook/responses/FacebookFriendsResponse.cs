@@ -1,24 +1,27 @@
 ﻿using System.Collections.Generic;
 
-namespace blap.framework.facebook.responses
+namespace facebookservices
 {
-  class FacebookFriendsResponse : AbstractFacebookApiResponse
+  public class FacebookFriendsResponse : AbstractFacebookApiResponse
   {
     public List<FacebookFriend> friends { get; private set; }
 
-    public FacebookFriendsResponse(FBResult result)
-      : base(result)
+    public override void ParseResponse(FBResult result)
     {
+      base.ParseResponse(result);
       if (base.success)
       {
-        List<FacebookFriend> temp;
-        data.Make<List<FacebookFriend>>(out temp);
-        friends = temp;
+        friends = data.Make<List<FacebookFriend>>();
       }
+    }
+
+    public override string ToString()
+    {
+      return TinyJSON.JSON.Dump(this, TinyJSON.EncodeOptions.PrettyPrint);
     }
   }
 
-  class FacebookFriend
+  public class FacebookFriend
   {
     public string id = "";
     public string about = "";

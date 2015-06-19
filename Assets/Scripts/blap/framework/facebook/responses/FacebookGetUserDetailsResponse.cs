@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace blap.framework.facebook.responses
+﻿namespace facebookservices
 {
-  class FacebookGetUserDetailsResponse : AbstractFacebookApiResponse
+  public class FacebookGetUserDetailsResponse : AbstractFacebookApiResponse
   {
     public FacebookUser userDetails { get; private set; }
 
-    public FacebookGetUserDetailsResponse(FBResult result)
-      : base(result)
+    public override void ParseResponse(FBResult result)
     {
+      base.ParseResponse(result);
       if (base.success)
       {
-        FacebookUser temp = new FacebookUser();
-        base.returnData.Make<FacebookUser>(out temp);
-        userDetails = temp;
+        userDetails = base.returnData.Make<FacebookUser>();
       }
+    }
+
+    public override string ToString()
+    {
+      return TinyJSON.JSON.Dump(this, TinyJSON.EncodeOptions.PrettyPrint);
     }
   }
 
-  class FacebookUser
+  public class FacebookUser
   {
     public string id = "";
     public string first_name = "";

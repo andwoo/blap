@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace blap.framework.debug.interfaces
+namespace debugconsole
 {
   public delegate void InputCommandHandler(string command, string[] args);
 

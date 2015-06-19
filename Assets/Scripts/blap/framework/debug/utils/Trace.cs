@@ -1,7 +1,6 @@
-﻿using blap.framework.debug.views;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace blap.framework.debug.utils
+namespace debugconsole
 {
   public static class Trace
   {
@@ -31,7 +30,6 @@ namespace blap.framework.debug.utils
 #else
       DebugConsole.Log(message.ToString(), type);
 #endif
-
     }
   }
 }

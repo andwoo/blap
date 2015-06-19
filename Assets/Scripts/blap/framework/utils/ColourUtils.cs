@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace blap.framework.utils
+namespace utils
 {
   public static class ColourUtils
   {

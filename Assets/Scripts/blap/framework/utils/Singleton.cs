@@ -1,4 +1,4 @@
-﻿namespace blap.framework.utils
+﻿namespace utils
 {
   class Singleton<T> where T : new()
   {

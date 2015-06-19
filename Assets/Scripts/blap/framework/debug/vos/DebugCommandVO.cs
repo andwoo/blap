@@ -1,4 +1,4 @@
-﻿namespace blap.framework.debug.vos
+﻿namespace debugconsole
 {
   class DebugCommandVO
   {

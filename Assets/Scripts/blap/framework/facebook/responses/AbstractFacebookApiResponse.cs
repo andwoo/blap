@@ -1,18 +1,18 @@
 ﻿using blap.framework.extensions;
 using TinyJSON;
 
-namespace blap.framework.facebook.responses
+namespace facebookservices
 {
   public abstract class AbstractFacebookApiResponse : AbstractFacebookResponse
   {
     protected Variant data { get; private set; }
 
-    public AbstractFacebookApiResponse(FBResult result)
-      : base(result)
+    public override void ParseResponse(FBResult result)
     {
+      base.ParseResponse(result);
       if (base.success)
       {
-        if(base.returnData.ContainsKey("data"))
+        if (base.returnData.ContainsKey("data"))
         {
           data = base.returnData["data"];
         }

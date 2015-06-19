@@ -1,60 +1,47 @@
-﻿using blap.framework.debug.utils;
-using blap.framework.facebook.interfaces;
-using blap.framework.facebook.requests;
-using blap.framework.facebook.responses;
+﻿using debugconsole;
 using Facebook;
 using System;
-using TinyJSON;
+using System.Collections.Generic;
 
-namespace blap.framework.facebook.services
+namespace facebookservices
 {
-  class FacebookService : IFacebookService
+  public delegate void FacebookServiceInitialized();
+  public delegate void FacebookServiceResponse<TResponse>(TResponse response) where TResponse : AbstractFacebookResponse, new();
+
+  public static class FacebookService
   {
-    public FacebookService() { }
-
-    public void ActivateApp()
-    {
-      FB.ActivateApp();
-    }
-
-    public bool IsInitialized()
-    {
-      return FB.IsInitialized;
-    }
-
-    public void Initialize(InitDelegate onInitComplete, HideUnityDelegate hideUnityDelegate, string authResponse)
+    public static void Initialize(FacebookServiceInitialized callback)
     {
       if (!FB.IsInitialized)
       {
-        FB.Init(onInitComplete, hideUnityDelegate, authResponse);
+        FB.Init(delegate()
+        {
+          FB.ActivateApp();
+          callback();
+        });
+      }
+      else
+      {
+        Trace.Log("Facebook service is already initialized", UnityEngine.LogType.Warning);
       }
     }
 
-    public bool IsLoggedIn()
+    public static bool IsLoggedIn()
     {
       return FB.IsLoggedIn;
     }
 
-    public void Login<T>(string scope, LoginCompleteHandler completeHandler) where T : AbstractFacebookResponse
-    {
-      FB.Login(scope, (delegate(FBResult result)
-      {
-        Trace.Log(string.Format("Login complete.\ndata: {0}\nerror: {1}", result.Text, result.Error));
-        completeHandler((AbstractFacebookResponse)Activator.CreateInstance(typeof(T), new object[] { result }));
-      }));
-    }
-
-    public string GetAccessToken()
+    public static string GetAccessToken()
     {
       return FB.AccessToken;
     }
 
-    public bool IsAccessTokenExpired(DateTime currentDate)
+    public static bool IsAccessTokenExpired(DateTime currentDate)
     {
-      if(IsLoggedIn())
+      if (IsLoggedIn())
       {
         int compare = currentDate.CompareTo(FB.AccessTokenExpiresAt);
-        if(compare > 0)
+        if (compare > 0)
         {
           return true;
         }
@@ -66,19 +53,54 @@ namespace blap.framework.facebook.services
       }
     }
 
-    public string GetUserId()
+    public static void Login(string[] loginPermissions, FacebookServiceResponse<FacebookLoginResponse> callback)
     {
-      return FB.UserId;
+      FB.Login(loginPermissions != null ? string.Join(",", loginPermissions) : string.Empty,
+        delegate(FBResult result)
+        {
+          HandleFacebookResponse<FacebookLoginResponse>(result, callback);
+        });
     }
 
-    public void SendApiRequest<T>(AbstractFacebookApiRequest request, ApiCompleteHandler completeHandler) where T : AbstractFacebookApiResponse
+    public static void Logout()
     {
-      Trace.Log(string.Format("Sending api request.\nendPoint: {0}\nhttpMethod: {1}\npostData: {2}", request.GetApiCall(), request.httpMethod.ToString(), request.postData != null ? JSON.Dump(request.postData) : "No data"));
-      FB.API(request.GetApiCall(), request.httpMethod, (delegate(FBResult result)
-      {
-        Trace.Log(string.Format("Api request complete.\ndata: {0}\nerror: {1}", result.Text, result.Error));
-        completeHandler((AbstractFacebookApiResponse)Activator.CreateInstance(typeof(T), new object[] { result }));
-      }), request.postData);
+      FB.Logout();
+    }
+
+    public static void GetUserPermission(FacebookServiceResponse<FacebookGetUserPermissionsResponse> callback)
+    {
+      SendApiRequest<FacebookGetUserPermissionsResponse>("/me/permissions", HttpMethod.GET, null, callback);
+    }
+
+    public static void GetFriends(string[] fields, FacebookServiceResponse<FacebookFriendsResponse> callback)
+    {
+      SendApiRequest<FacebookFriendsResponse>(BuildApiFieldsCall("/me/friends", fields), HttpMethod.GET, null, callback);
+    }
+
+    public static void GetUserDetails(string[] fields, FacebookServiceResponse<FacebookGetUserDetailsResponse> callback)
+    {
+      SendApiRequest<FacebookGetUserDetailsResponse>(BuildApiFieldsCall("/me", fields), HttpMethod.GET, null, callback);
+    }
+
+    private static void SendApiRequest<TResponse>(string apiCall, HttpMethod httpMethod, Dictionary<string, string> postData, FacebookServiceResponse<TResponse> callback) where TResponse : AbstractFacebookResponse, new()
+    {
+      FB.API(apiCall, httpMethod, 
+        delegate(FBResult result)
+        {
+          HandleFacebookResponse<TResponse>(result, callback);
+        }, postData);
+    }
+
+    private static void HandleFacebookResponse<TResponse>(FBResult result, FacebookServiceResponse<TResponse> callback) where TResponse : AbstractFacebookResponse, new()
+    {
+      TResponse response = new TResponse();
+      response.ParseResponse(result);
+      callback(response);
+    }
+
+    private static string BuildApiFieldsCall(string call, string[] fields)
+    {
+      return fields != null && fields.Length > 0 ? call += "fields=" + string.Join(",", fields) : call;
     }
   }
 }

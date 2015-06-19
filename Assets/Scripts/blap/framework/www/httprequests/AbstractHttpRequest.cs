@@ -1,5 +1,5 @@
-﻿using blap.framework.debug.utils;
-using coroutinerunner;
+﻿using coroutinerunner;
+using debugconsole;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,7 +102,8 @@ namespace www
 
     private IEnumerator ExponentialBackoff(float backOff)
     {
-      Trace.Log(string.Format("Retrying request in {0} seconds", backOff));
+      Trace
+        .Log(string.Format("Retrying request in {0} seconds", backOff));
       yield return new WaitForSeconds(backOff);
       SendRequest();
     }

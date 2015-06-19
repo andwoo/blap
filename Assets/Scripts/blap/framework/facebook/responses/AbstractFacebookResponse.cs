@@ -1,7 +1,6 @@
-﻿using blap.framework.debug.utils;
-using TinyJSON;
+﻿using TinyJSON;
 
-namespace blap.framework.facebook.responses
+namespace facebookservices
 {
   public abstract class AbstractFacebookResponse
   {
@@ -9,7 +8,9 @@ namespace blap.framework.facebook.responses
     public string errorMessage { get; protected set; }
     protected Variant returnData { get; set; }
 
-    public AbstractFacebookResponse(FBResult result)
+    public AbstractFacebookResponse() { }
+
+    public virtual void ParseResponse(FBResult result)
     {
       success = string.IsNullOrEmpty(result.Error) ? true : false;
       errorMessage = !success ? result.Error : "";

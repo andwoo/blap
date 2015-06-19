@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace blap.framework.utils
+namespace utils
 {
   static class MathUtils
   {

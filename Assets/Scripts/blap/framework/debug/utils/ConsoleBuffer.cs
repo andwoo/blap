@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace blap.framework.debug.utils
+namespace debugconsole
 {
   class ConsoleBuffer
   {

@@ -1,14 +1,12 @@
 ﻿#undef TEST_LOG_HANDLER
 
-using blap.framework.debug.interfaces;
-using blap.framework.debug.utils;
-using blap.framework.utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using utils;
 
-namespace blap.framework.debug.views
+namespace debugconsole
 {
   public class DebugConsole : MonoBehaviour, IDebugConsole
   {
