@@ -1,4 +1,4 @@
-﻿using blap.framework.extensions;
+﻿using extensions;
 using TinyJSON;
 
 namespace facebookservices

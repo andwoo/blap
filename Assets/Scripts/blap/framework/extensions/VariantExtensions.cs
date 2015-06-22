@@ -2,7 +2,7 @@
 
 using TinyJSON;
 
-namespace blap.framework.extensions
+namespace extensions
 {
   public static class VariantExtensions
   {

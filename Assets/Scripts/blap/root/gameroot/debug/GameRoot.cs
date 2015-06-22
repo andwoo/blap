@@ -2,21 +2,21 @@
 using facebookservices;
 using UnityEngine;
 
-namespace Assets.Scripts.blap.root
+namespace gameroot
 {
-  public class GameRoot : MonoBehaviour
+  public partial class GameRoot
   {
-    private DebugConsole _console;
+    private static DebugConsole _console;
 
-    private void Start()
+    public static void InitializeDebugConsole()
     {
-      GameObject go = Instantiate(Resources.Load("framework/debug/DebugConsole")) as GameObject;
+      GameObject go = GameObject.Instantiate(Resources.Load("framework/debug/DebugConsole"), Vector3.zero, Quaternion.identity) as GameObject;
       _console = go.GetComponent<DebugConsole>();
       _console.AddInputCommandLister(HandleCommands);
       Trace.Log("App Startup Complete");
     }
 
-    private void HandleCommands(string command, string[] args)
+    private static void HandleCommands(string command, string[] args)
     {
       switch (command)
       {
@@ -45,27 +45,27 @@ namespace Assets.Scripts.blap.root
       }
     }
 
-    private void FBInitResponse()
+    private static void FBInitResponse()
     {
       Trace.Log("Facebook service initialized");
     }
 
-    private void FBLoginResponse(FacebookLoginResponse response)
+    private static void FBLoginResponse(FacebookLoginResponse response)
     {
       Trace.Log(response.ToString());
     }
 
-    private void FBMeResponse(FacebookGetUserDetailsResponse response)
+    private static void FBMeResponse(FacebookGetUserDetailsResponse response)
     {
       Trace.Log(response.ToString());
     }
 
-    private void FBPermissionsResponse(FacebookGetUserPermissionsResponse response)
+    private static void FBPermissionsResponse(FacebookGetUserPermissionsResponse response)
     {
       Trace.Log(response.ToString());
     }
 
-    private void FBFriendsResponse(FacebookFriendsResponse response)
+    private static void FBFriendsResponse(FacebookFriendsResponse response)
     {
       Trace.Log(response.ToString());
     }
