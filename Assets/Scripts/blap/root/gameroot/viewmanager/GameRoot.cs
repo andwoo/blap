@@ -21,15 +21,15 @@ namespace gameroot
 
     private static void RegisterLayers()
     {
-      ViewManager.instance.RegisterLayer((int)LayerEnum.BACKGROUND, "Background");
-      ViewManager.instance.RegisterLayer((int)LayerEnum.HUD, "HUD");
-      ViewManager.instance.RegisterLayer((int)LayerEnum.GUI, "GUI");
-      ViewManager.instance.RegisterLayer((int)LayerEnum.MODAL, "Modal");
+      ViewManager.instance.RegisterLayer((int)LayerEnum.BACKGROUND, "Background", LayerTypeEnum.SINGLE_VIEW_LAYER);
+      ViewManager.instance.RegisterLayer((int)LayerEnum.HUD, "HUD", LayerTypeEnum.SINGLE_VIEW_LAYER);
+      ViewManager.instance.RegisterLayer((int)LayerEnum.GUI, "GUI", LayerTypeEnum.MULTI_VIEW_LAYER);
+      ViewManager.instance.RegisterLayer((int)LayerEnum.MODAL, "Modal", LayerTypeEnum.MULTI_VIEW_LAYER);
     }
 
     private static void RegisterViews()
     {
-      ViewManager.instance.RegisterView((int)ViewEnum.TEST_VIEW, (int)LayerEnum.GUI, "root/TestView");
+      
     }
   }
 }

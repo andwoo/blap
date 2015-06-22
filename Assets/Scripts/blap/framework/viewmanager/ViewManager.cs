@@ -5,34 +5,43 @@ using UnityEngine.UI;
 
 namespace viewmanager
 {
-  [RequireComponent(typeof(Canvas), /*typeof(CanvasScaler), */typeof(GraphicRaycaster))]
+  [RequireComponent(typeof(Canvas), typeof(GraphicRaycaster))]
   public class ViewManager : MonoBehaviour
   {
     public static ViewManager instance { get; private set; }
 
-    private IDictionary<int, Layer> _layers;
+    private IDictionary<int, AbstractLayer> _layers;
     private IDictionary<int, ViewInfo> _views;
 
     private void Awake()
     {
       Object.DontDestroyOnLoad(this);
       instance = this;
-      _layers = new Dictionary<int, Layer>();
+      _layers = new Dictionary<int, AbstractLayer>();
       _views = new Dictionary<int, ViewInfo>();
     }
 
-    public void RegisterLayer(int id, string name)
+    public void RegisterLayer(int id, string name, LayerTypeEnum type)
     {
       GameObject viewContainer = new GameObject();
       RectTransform rect = viewContainer.AddComponent<RectTransform>();
       rect.SetAsStretch();
-      /*rect.position = Vector3.zero;
-      rect.rotation = Quaternion.identity;*/
       viewContainer.name = name;
       viewContainer.transform.SetParent(this.gameObject.transform, false);
       //set new layer as first child
       viewContainer.transform.SetAsLastSibling();
-      _layers.Add(id, new Layer(viewContainer));
+
+      switch (type)
+      {
+        case LayerTypeEnum.MULTI_VIEW_LAYER:
+          _layers.Add(id, new MultiViewLayer(viewContainer));
+          break;
+        case LayerTypeEnum.SINGLE_VIEW_LAYER:
+        default:
+          _layers.Add(id, new SingleViewLayer(viewContainer));
+          break;
+      }
+      
     }
 
     public void RegisterView(int viewId, int layerId, string prefabName)
@@ -54,19 +63,12 @@ namespace viewmanager
     {
       //make sure the view is not already in the queue or currently active
       ViewInfo view = _views[viewId];
-      if (!view.active)
-      {
-        _layers[view.layerId].PushView(view, viewData);
-      }
+      _layers[view.layerId].PushView(view, viewData);
     }
 
-    public void PopView(int viewId)
+    public void PopView(IView view)
     {
-      ViewInfo view = _views[viewId];
-      if (view.active)
-      {
-        _layers[view.layerId].PopView(view);
-      }
+      _layers[view.viewInfo.layerId].PopView(view);
     }
   }
 }

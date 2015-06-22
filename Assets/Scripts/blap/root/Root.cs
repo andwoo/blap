@@ -13,12 +13,6 @@ namespace root
 
       GameRoot.InitializeDebugConsole();
       GameRoot.InitializeViewManager();
-
-      GameRoot.viewManager.PushView((int)ViewEnum.TEST_VIEW, "yoyoma");
-      GameRoot.viewManager.PushView((int)ViewEnum.TEST_VIEW, "yoyoma");
-      GameRoot.viewManager.PushView((int)ViewEnum.TEST_VIEW, "yoyoma");
-      GameRoot.viewManager.PushView((int)ViewEnum.TEST_VIEW, "yoyoma");
-      GameRoot.viewManager.PushView((int)ViewEnum.TEST_VIEW, "yoyoma");
     }
   }
 }
