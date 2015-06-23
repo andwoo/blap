@@ -1,7 +1,6 @@
 ﻿using DG.Tweening;
 using gameroot;
 using UnityEngine;
-using viewenums;
 
 namespace root
 {
