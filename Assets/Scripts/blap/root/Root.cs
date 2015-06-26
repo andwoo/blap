@@ -12,6 +12,7 @@ namespace root
 
       GameRoot.InitializeDebugConsole();
       GameRoot.InitializeViewManager();
+      GameRoot.InitializeGlobalEventDispatcher();
     }
   }
 }

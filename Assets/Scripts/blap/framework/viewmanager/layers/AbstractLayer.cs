@@ -40,6 +40,7 @@ namespace viewmanager
     protected IView InstantiatePrefabView(ViewInfo info, object viewData)
     {
       IView view = (GameObject.Instantiate(Resources.Load(info.prefabPath), Vector3.zero, Quaternion.identity) as GameObject).GetComponent<IView>();
+      Object.DontDestroyOnLoad(view.gameObject);
       view.SetViewInfo(info, viewData);
       view.gameObject.transform.SetParent(viewcontainer.transform, false);
       return view;

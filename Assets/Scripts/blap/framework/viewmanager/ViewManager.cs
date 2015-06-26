@@ -41,7 +41,6 @@ namespace viewmanager
           _layers.Add(id, new SingleViewLayer(viewContainer));
           break;
       }
-      
     }
 
     public void RegisterView(int viewId, int layerId, string prefabName)
@@ -61,7 +60,6 @@ namespace viewmanager
 
     public void PushView(int viewId, object viewData)
     {
-      //make sure the view is not already in the queue or currently active
       ViewInfo view = _views[viewId];
       _layers[view.layerId].PushView(view, viewData);
     }
