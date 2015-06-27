@@ -31,6 +31,7 @@ namespace viewmanager
     {
       if (!info.active)
       {
+        info.active = true;
         viewQueue.Enqueue(new QueuedView(info, viewData));
 
         if (!_transitionInProgress)
@@ -75,7 +76,7 @@ namespace viewmanager
         {
           QueuedView qItem = viewQueue.Dequeue();
           currentView = InstantiatePrefabView(qItem.viewInfo, qItem.viewData);
-          currentView.viewInfo.active = true;
+          //currentView.viewInfo.active = true;
           TransitionInView(currentView, delegate()
           {
             ShowNextViewInQueue();

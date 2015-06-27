@@ -41,6 +41,7 @@ namespace viewmanager
     {
       IView view = (GameObject.Instantiate(Resources.Load(info.prefabPath), Vector3.zero, Quaternion.identity) as GameObject).GetComponent<IView>();
       Object.DontDestroyOnLoad(view.gameObject);
+      view.gameObject.name = view.gameObject.name.Replace("(Clone)", "");
       view.SetViewInfo(info, viewData);
       view.gameObject.transform.SetParent(viewcontainer.transform, false);
       return view;
