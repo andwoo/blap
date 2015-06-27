@@ -1,6 +1,4 @@
 ﻿using eventdispatcher;
-using viewenums;
-using viewmanager;
 
 namespace gameroot
 {

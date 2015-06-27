@@ -1,4 +1,5 @@
 ﻿using coroutinerunner;
+using debugconsole;
 using filesystem;
 using framework.actionqueue;
 using gameroot;
@@ -49,6 +50,7 @@ namespace root.introloading
 
     private void OnLoadComplete()
     {
+      Trace.Log("App Contents Loaded");
       Dispose();
       GameRoot.globalDispatcher.DispatchEvent(IntroLoadEvent.LOAD_COMPLETE, null);
     }

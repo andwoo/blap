@@ -42,6 +42,9 @@ namespace gameroot
         case "fb_friends":
           FacebookService.GetFriends(null, FBFriendsResponse);
           break;
+        case "wut":
+          Debug.Log("BOP BOP");
+          break;
       }
     }
 

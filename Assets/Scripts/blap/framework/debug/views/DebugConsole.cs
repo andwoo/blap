@@ -101,19 +101,19 @@ namespace debugconsole
     /// <param name="logString">The message object that was logged</param>
     /// <param name="stackTrace">The stack trace leading to the point where the log was invoked</param>
     /// <param name="type">The type of log. ex. error, warning, ect...</param>
-    private void UnityHandleLog(string logString, string stackTrace, LogType type)
+    private void UnityHandleLog(string condition, string stackTrace, LogType type)
     {
       switch (type)
       {
         case LogType.Log:
         case LogType.Warning:
-          InsertLogMessage(logString, type);
+          InsertLogMessage(condition, type);
           break;
         case LogType.Assert:
         case LogType.Error:
         case LogType.Exception:
         default:
-          InsertLogMessage(logString + "\n" + stackTrace, type);
+          InsertLogMessage(condition + "\n" + stackTrace, type);
           break;
       }
     }
@@ -150,15 +150,18 @@ namespace debugconsole
       _logContent = new ConsoleBuffer(_numberOfLinesToCache);
 
 #if !UNITY_EDITOR || TEST_LOG_HANDLER
-      Application.RegisterLogCallback(UnityHandleLog);
+      //Application.RegisterLogCallback(UnityHandleLog); //deprecated
+      Application.logMessageReceived += UnityHandleLog;
 #endif
       ShowConsoleElements(_openConsole);
+      
     }
 
     private void OnDestroy()
     {
 #if !UNITY_EDITOR || TEST_LOG_HANDLER
-      Application.RegisterLogCallback(null);
+      //Application.RegisterLogCallback(null); //deprecated
+      Application.logMessageReceived -= UnityHandleLog;
 #endif
     }
 
