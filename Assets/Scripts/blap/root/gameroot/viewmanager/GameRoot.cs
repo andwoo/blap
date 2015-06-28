@@ -34,6 +34,7 @@ namespace gameroot
 
     private static void RegisterViews()
     {
+      viewManager.RegisterView((int)ViewEnum.BACKGROUND, (int)LayerEnum.BACKGROUND, "background/Background");
       viewManager.RegisterView((int)ViewEnum.INTRO_LOADING, (int)LayerEnum.GUI, "introloading/IntroLoading");
       viewManager.RegisterView((int)ViewEnum.MAIN_MENU, (int)LayerEnum.GUI, "mainmenu/MainMenu");
       viewManager.RegisterView((int)ViewEnum.PLAYER_PROFILE, (int)LayerEnum.GUI, "player/PlayerProfile");

@@ -47,6 +47,7 @@ namespace root
 
     private void StartApp()
     {
+      GameRoot.viewManager.PushView((int)ViewEnum.BACKGROUND);
       GameRoot.viewManager.PushView((int)ViewEnum.INTRO_LOADING);
 
       IntroLoadQueue initialLoad = new IntroLoadQueue();
