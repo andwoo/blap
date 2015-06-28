@@ -1,19 +1,26 @@
 ﻿using debugconsole;
 using facebookservices;
 using UnityEngine;
+using viewenums;
 
 namespace gameroot
 {
-  public partial class GameRoot
+  public static partial class GameRoot
   {
     private static DebugConsole _console;
 
-    public static void InitializeDebugConsole()
+    public static void SetDebugConsole(DebugConsole console)
     {
-      GameObject go = GameObject.Instantiate(Resources.Load("framework/debug/DebugConsole"), Vector3.zero, Quaternion.identity) as GameObject;
-      _console = go.GetComponent<DebugConsole>();
+      _console = console;
       _console.AddInputCommandLister(HandleCommands);
-      Trace.Log("App Startup Complete");
+    }
+
+    public static DebugConsole console
+    {
+      get
+      {
+        return _console;
+      }
     }
 
     private static void HandleCommands(string command, string[] args)
@@ -42,8 +49,14 @@ namespace gameroot
         case "fb_friends":
           FacebookService.GetFriends(null, FBFriendsResponse);
           break;
-        case "wut":
-          Debug.Log("BOP BOP");
+        case "load":
+          GameRoot.viewManager.PushView((int)ViewEnum.INTRO_LOADING);
+          break;
+        case "player":
+          GameRoot.viewManager.PushView((int)ViewEnum.PLAYER_PROFILE);
+          break;
+        case "menu":
+          GameRoot.viewManager.PushView((int)ViewEnum.MAIN_MENU);
           break;
       }
     }

@@ -8,15 +8,12 @@ namespace viewmanager
   [RequireComponent(typeof(Canvas), typeof(GraphicRaycaster))]
   public class ViewManager : MonoBehaviour
   {
-    public static ViewManager instance { get; private set; }
-
     private IDictionary<int, AbstractLayer> _layers;
     private IDictionary<int, ViewInfo> _views;
 
     private void Awake()
     {
       Object.DontDestroyOnLoad(this);
-      instance = this;
       _layers = new Dictionary<int, AbstractLayer>();
       _views = new Dictionary<int, ViewInfo>();
     }

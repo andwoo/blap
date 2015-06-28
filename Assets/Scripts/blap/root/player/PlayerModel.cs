@@ -4,11 +4,11 @@ namespace root.player
 {
   public class PlayerModel : Singleton<PlayerModel>
   {
-    public string name;
-    public int swagLevel;
-    public int chainLevel;
-    public int pantsLevel;
-    public int fiyaLevel;
+    public string name = string.Empty;
+    public int swagLevel = 0;
+    public int chainLevel = 0;
+    public int pantsLevel = 0;
+    public int fiyaLevel = 0;
 
     public PlayerModel() { }
 

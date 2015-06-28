@@ -2,13 +2,13 @@
 
 namespace gameroot
 {
-  public partial class GameRoot
+  public static partial class GameRoot
   {
     private static EventDispatcher _dispatcher;
 
-    public static void InitializeGlobalEventDispatcher()
+    public static void SetEventDispatcher(EventDispatcher dispatcher)
     {
-      _dispatcher = new EventDispatcher();
+      _dispatcher = dispatcher;
     }
 
     public static EventDispatcher globalDispatcher

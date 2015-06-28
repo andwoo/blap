@@ -95,6 +95,8 @@ namespace debugconsole
 
     private event InputCommandHandler InputCommandDispatcher;
 
+    private static bool _isConsoleReady = false;
+
     /// <summary>
     /// This callback is called each time Unity's Debug methods are invoked. We use it to display content logged into our debug console.
     /// </summary>
@@ -120,20 +122,30 @@ namespace debugconsole
 
     public static void Log(string logString, LogType type)
     {
-      _instance.InsertLogMessage(logString, type);
+      if (_instance != null && _isConsoleReady)
+      {
+        _instance.InsertLogMessage(logString, type);
+      }
     }
 
-    private void Start()
+    private void Awake()
     {
+      DontDestroyOnLoad(this.gameObject);
+      _isConsoleReady = false;
+
       if (_instance == null)
       {
         _instance = this;
-        DontDestroyOnLoad(this); //prevent the console from destroying when a scene is changed
+        DontDestroyOnLoad(this.gameObject); //prevent the console from destroying when a scene is changed
       }
       else
       {
         throw new Exception("Only one instance of DebugConsole can be initialized.");
       }
+    }
+
+    private void Start()
+    {
       //setup all the colour values to be quickly accessed
       _consoleColours = new Dictionary<LogType, Color>();
       _consoleColours.Add(LogType.Log, _logColour);
@@ -154,7 +166,8 @@ namespace debugconsole
       Application.logMessageReceived += UnityHandleLog;
 #endif
       ShowConsoleElements(_openConsole);
-      
+
+      _isConsoleReady = true;
     }
 
     private void OnDestroy()
